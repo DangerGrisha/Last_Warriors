@@ -15,3 +15,7 @@ commands:
     aliases:
       - humiliationtime
       - humiliation time
+  test:
+    description: spawn something
+    aliases:
+      - tests
