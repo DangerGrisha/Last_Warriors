@@ -1,0 +1,17 @@
+name: TrainingFirstPlugin
+version: '${project.version}'
+main: greg.pirat1c.humiliation.HumiliationPlugin
+api-version: 1.19
+authors: [ P1rat1C ]
+
+commands:
+  spawnEntity:
+    description: the operator start sucking
+    aliases:
+      - sosite
+      - suckit
+  humiliateMe:
+    description: you' ve been humiliated
+    aliases:
+      - humiliationtime
+      - humiliation time
