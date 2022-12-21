@@ -19,3 +19,7 @@ commands:
     description: spawn something
     aliases:
       - tests
+  spawn:
+    description: teleport players on a spawn
+    aliases:
+    - home
