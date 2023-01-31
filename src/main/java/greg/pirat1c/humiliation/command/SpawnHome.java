@@ -1,4 +1,4 @@
-package greg.pirat1c.humiliation.entity;
+package greg.pirat1c.humiliation.command;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -20,6 +20,7 @@ public class SpawnHome implements CommandExecutor {
         player.teleport(location);
 
         //System.out.println("Position after teleport: " + player.getLocation());
+        sender.sendMessage("You have been teleported to spawn");
         return false;
     }
 }

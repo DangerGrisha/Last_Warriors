@@ -1,4 +1,4 @@
-package greg.pirat1c.humiliation.entity;
+package greg.pirat1c.humiliation.command;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -8,7 +8,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
@@ -56,6 +55,7 @@ public class SpawnCommand implements CommandExecutor {
         zombieGun(player, ammo, frequency);
 
         return true;
+
     }
 
     private void zombieGun(Player player, int ammo, int frequency) throws ClassCastException {

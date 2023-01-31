@@ -21,5 +21,13 @@ commands:
       - tests
   spawn:
     description: teleport players on a spawn
+  sethome:
+    description: remembers the current coordinates
+  home:
+    description: teleport on your house
+  kitslave:
+    description: gives player kit slave
     aliases:
-    - home
+      - kit slave
+  saskesword:
+

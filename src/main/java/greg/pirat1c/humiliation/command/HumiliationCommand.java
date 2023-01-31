@@ -1,4 +1,4 @@
-package greg.pirat1c.humiliation.entity;
+package greg.pirat1c.humiliation.command;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -11,12 +11,16 @@ import org.bukkit.util.Vector;
 
 public class HumiliationCommand implements CommandExecutor {
 
+    // fields
     private final JavaPlugin plugin;
 
+
+    // constructors
     public HumiliationCommand(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
+    //methods
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
