@@ -1,4 +1,4 @@
-package greg.pirat1c.humiliation.entity;
+package greg.pirat1c.humiliation.command;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
-public class TestSpawn implements CommandExecutor {
+public class TestSpawnCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
