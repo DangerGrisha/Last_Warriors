@@ -47,3 +47,20 @@ OR
 1. Clone repo
 2. Do according to instructions in "Mvn dependency plugin" above
 3. Restart the server
+
+### Additional server configuration
+
+1. Open the server.properties file in the minicraft server, set the next properties
+   1. online-mode=false
+   2. white-list=false
+
+### Running the plugin 
+
+1. Proceed with installation instructions
+2. Run the minecraft server using start.bat file
+3. Open minecraft launcher
+   1. Multiplayer
+   2. Server address 0.0.0.0
+   3. in server cmd window type : op "${your user name}". E.G. if your username is Uranus, type "op Uranus"
+   4. try using the plugin by typing in any of the commands
+   
