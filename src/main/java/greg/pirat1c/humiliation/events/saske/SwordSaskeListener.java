@@ -1,7 +1,12 @@
 package greg.pirat1c.humiliation.events.saske;
 
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,10 +15,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class SwordSaskeListener implements Listener {
 
@@ -38,6 +45,7 @@ public class SwordSaskeListener implements Listener {
         Location blockLocation = player.getLocation();
 
         pushPlayerBack(player);
+        generateParticles(player);
         dealAreaDamage();
         pushEnemyBack();
 
@@ -72,7 +80,49 @@ public class SwordSaskeListener implements Listener {
 
 
 
+
         return true;
+    }
+
+    private boolean generateParticles(Player player){
+        RayTraceResult rayTraceResult = player.getWorld().rayTrace(
+                player.getEyeLocation(),
+                player.getLocation().getDirection(),
+                4,
+                FluidCollisionMode.ALWAYS,
+                true,
+                1.0,
+                null
+        );
+        if (rayTraceResult != null) {
+
+            System.out.println(rayTraceResult.getHitBlock());
+            System.out.println(rayTraceResult.getHitEntity());
+            System.out.println(rayTraceResult.getHitBlockFace());
+            System.out.println(rayTraceResult.getHitPosition());
+
+            BlockFace blockFace = rayTraceResult.getHitBlockFace();
+            boolean isBlock = rayTraceResult.getHitBlock() != null;
+
+            Location hitLocation = isBlock
+                    ? rayTraceResult.getHitBlock().getLocation()
+                    : rayTraceResult.getHitEntity().getLocation();
+
+            switch (blockFace) {
+                case UP:hitLocation.setY(hitLocation.getY() + 1.0);
+                case DOWN:hitLocation.setY(hitLocation.getY() - 1.0);
+                case NORTH:hitLocation.setZ(hitLocation.getZ() - 1.0);
+                case SOUTH:hitLocation.setZ(hitLocation.getZ() + 1.0);
+                case EAST:hitLocation.setX(hitLocation.getX() + 1.0);
+                case WEST:hitLocation.setX(hitLocation.getX() - 1.0);
+            }
+
+            player.getLocation().getWorld().spawnParticle(Particle.SWEEP_ATTACK, hitLocation, 1 );
+        } else {
+            System.out.println("empty result");
+        }
+        System.out.println("\n");
+        return false;
     }
 
     private boolean dealAreaDamage() {
