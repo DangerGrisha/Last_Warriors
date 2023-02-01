@@ -56,15 +56,17 @@ public class SwordSaskeListener implements Listener {
 
         double z = destDirection.getZ();
         double x = destDirection.getX();
+        double y = destDirection.getY();
 
-        // in order to provide stable x,z direstion throw
-        // we have to stabilize it by introducing a multiplier M such as
-        // (x^2 + z^2) * M == 1
-        double mult = Math.sqrt( 1 / (Math.pow(x, 2) + Math.pow(z, 2)));
+        // according scientifically proven formula
+        // the push should be HARDER once the player looking forward : y == 0
+        // however, the push will be the same strength if player looking completely downwards : y == -1
+        // therefore the formula for the player y direction vector push would be : f( Y ) = -y/2 + 1/2;
+        double modifiedY = (y - 1.0) / 2.0;
 
-        destDirection.setZ(z * -1 * mult);
-        destDirection.setX(x * -1 * mult);
-        destDirection.setY(0.5);
+        destDirection.setZ(z * -1);
+        destDirection.setX(x * -1);
+        destDirection.setY(modifiedY * -1);
         player.setVelocity(destDirection);
 
 
