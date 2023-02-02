@@ -37,22 +37,25 @@ Enjoy!
 ### Installation
 
 1. Clone the repo
-2. Run ```mvn clean install```
-3. go to target dir, copy the jar file
-4. paste the jar file into the plugins dir on the server 
-5. restart server 
+2. go to src/main/resources
+   1. create the dev.properties file
+   2. inside the file define minecraft.local.dir property that contains the path to minecraft server dir
+   3. E.G. `minecraft.local.dir=C:/ProgramFiles/minecraft-server`
+      4. Ensure that you are using slashes like in example, and not a backslash. Even on Windows
+2. Run `mvn clean install`
+3. Navigate to ${minecraft.server.location}/plugins on your local machine, and verify that the plugin is there
+4. Run/Rerun the minecraft server
 
-OR
+### FAQ
 
-1. Clone repo
-2. Do according to instructions in "Mvn dependency plugin" above
-3. Restart the server
+### Troubleshooting
 
-### Additional server configuration
-
-1. Open the server.properties file in the minicraft server, set the next properties
-   1. online-mode=false
-   2. white-list=false
+1. `You must set a minecraft.local.dir property. Read the README.md file for instructions. The parameter should point ot the minecraft server dir` Exception
+   1. Read this doc, especially the "installation" part
+   2. goto src/main/resources, verify that dev.properties is created, verify that `minecraft.local.dir` is created like in example above
+   3. Run `mvn clean install` again
+   4. If exception persist:
+      1. Define minecraft.local.dir in the properties directly in pom.xml like so: ``<minecraft.local.dir>D:\soft\minecraft-server\plugins</minecraft.local.dir>``
 
 ### Running the plugin 
 
