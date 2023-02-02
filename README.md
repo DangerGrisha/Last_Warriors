@@ -37,14 +37,17 @@ Enjoy!
 ### Installation
 
 1. Clone the repo
-2. go to src/main/resources
-   1. create the dev.properties file
-   2. inside the file define minecraft.local.dir property that contains the path to minecraft server dir
-   3. E.G. `minecraft.local.dir=C:/ProgramFiles/minecraft-server`
-      4. Ensure that you are using slashes like in example, and not a backslash. Even on Windows
-2. Run `mvn clean install`
-3. Navigate to ${minecraft.server.location}/plugins on your local machine, and verify that the plugin is there
-4. Run/Rerun the minecraft server
+2. update/define the <mark>minecraft.local.dir</mark> property : 
+  - go to src/main/resources 
+    - create the **dev.properties file** (or just copy **example.of.dev.properties** with renaming)
+    - inside the file define minecraft.local.dir property that contains the path to minecraft server dir
+    - E.G. `minecraft.local.dir=C:/ProgramFiles/minecraft-server`
+      -  Ensure that you are using slashes like in example, and not a backslash. Even on Windows
+3. Run `mvn clean install`
+4. Navigate to _${minecraft.server.location}/plugins_ on your local machine, and verify that the plugin is there
+5. Run/Rerun the minecraft server
+
+---
 
 ### FAQ
 
