@@ -30,4 +30,6 @@ commands:
     aliases:
       - kit slave
   saskesword:
-
+    description: give the player sword
+  shuriken:
+    description: give the player shuriken
