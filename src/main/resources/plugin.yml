@@ -33,3 +33,5 @@ commands:
     description: give the player sword
   shuriken:
     description: give the player shuriken
+  bodyReplacemen:
+    description: bodyReplacemen with people people in your eyes trace (has distance limit)
