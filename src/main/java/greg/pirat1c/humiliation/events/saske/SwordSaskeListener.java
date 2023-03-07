@@ -10,21 +10,25 @@ import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import sun.java2d.loops.DrawGlyphListAA;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public class SwordSaskeListener implements Listener {
 
-    public static final String SLAVE_DIRT = "SLAVE_DIRT";
+    public static final String DIAMOND_SWORD = "DIAMOND_SWORD";
     private JavaPlugin plugin;
     public SwordSaskeListener(JavaPlugin plugin) {
 
@@ -49,7 +53,7 @@ public class SwordSaskeListener implements Listener {
         if (hitOptional.isPresent()) {
             Tuple<BlockFace, Location> hitLocation = hitOptional.get();
             playAudio(player);
-            dealAreaDamage(player.getWorld(), hitLocation.getLeft(), hitLocation.getRight());
+            dealAreaDamage(player.getWorld(), hitLocation.getLeft(), hitLocation.getRight(), player);
             pushEnemyBack();
             System.out.println(event);
 
@@ -133,7 +137,10 @@ public class SwordSaskeListener implements Listener {
      * @param location the location of the damage
      * @return
      */
-    private boolean dealAreaDamage(World world, BlockFace direction, Location location) {
+    private boolean dealAreaDamage(World world, BlockFace direction, Location location, Player player) {
+        /**
+         *
+
         System.out.println("dealing area damage");
 
 
@@ -167,6 +174,37 @@ public class SwordSaskeListener implements Listener {
                 bubbleLocation.setX(bubbleLocation.getX() + 1);
             }
         }
+         */
+
+        player.getScoreboard().getTeam(player.getName());
+        World playerWorld = player.getWorld();
+        Location playerLocation = player.getLocation();
+        double range = 3.0;
+        double height = 3.0;
+        List<Entity> entities = player.getNearbyEntities(4, 1, 4);
+        for (Entity entity : entities) {
+            if (entity instanceof LivingEntity) {
+                LivingEntity target = (LivingEntity) entity;
+                // Проверяем, является ли сущность игроком
+                if (target instanceof Player) {
+
+
+                    /*if (!target.getScoreboard().getTeam(target.getName()).equals(player.getScoreboard().getTeam(player.getName()))) {
+                        */
+                    Team playerTeam = ((Player) target).getScoreboard().getEntryTeam(target.getName());
+                    Team myTeam = player.getScoreboard().getEntryTeam(player.getName());
+                         if (playerTeam != null && myTeam != null && playerTeam.equals(myTeam)) {
+                             continue;
+                         }
+                    }
+
+                    target.damage(5);
+                }
+
+            }
+
+
+
         return false;
     }
 
@@ -179,7 +217,7 @@ public class SwordSaskeListener implements Listener {
     }
 
     private boolean playAudio(Player player) {
-        Sound sound = Sound.ENTITY_EVOKER_CELEBRATE;
+        Sound sound = Sound.ENTITY_PLAYER_ATTACK_SWEEP;
         player.getWorld().playSound(player.getLocation(), sound, 1.0f, 1.0f);
         return true;
     }
@@ -191,9 +229,9 @@ public class SwordSaskeListener implements Listener {
      * @return
      */
     private boolean isSwordEvent(PlayerInteractEvent event, Player player){
-        return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK )  &&
-                player.getInventory().getItemInMainHand().getType() == Material.IRON_SWORD
-                && SLAVE_DIRT.equals(player.getInventory().getItemInMainHand().getItemMeta().getDisplayName());
+        return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
+                player.getInventory().getItemInMainHand().getType() == Material.DIAMOND_SWORD &&
+                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("katana saske");
 
 
     }
