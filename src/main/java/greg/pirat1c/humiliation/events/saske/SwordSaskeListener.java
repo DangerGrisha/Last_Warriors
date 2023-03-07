@@ -180,9 +180,11 @@ public class SwordSaskeListener implements Listener {
         World playerWorld = player.getWorld();
         Location playerLocation = player.getLocation();
         double range = 3.0;
-        double height = 3.0;
-        List<Entity> entities = player.getNearbyEntities(4, 1, 4);
-        for (Entity entity : entities) {
+        double height = 2.0;
+        //List<Entity> entities = player.getNearbyEntities(4, 1, 4);
+
+        for (Entity entity :  world.getNearbyEntities(location, range, height, range)) {
+
             if (entity instanceof LivingEntity) {
                 LivingEntity target = (LivingEntity) entity;
                 // Проверяем, является ли сущность игроком
@@ -190,18 +192,28 @@ public class SwordSaskeListener implements Listener {
 
 
                     /*if (!target.getScoreboard().getTeam(target.getName()).equals(player.getScoreboard().getTeam(player.getName()))) {
-                        */
+                     */
                     Team playerTeam = ((Player) target).getScoreboard().getEntryTeam(target.getName());
                     Team myTeam = player.getScoreboard().getEntryTeam(player.getName());
-                         if (playerTeam != null && myTeam != null && playerTeam.equals(myTeam)) {
-                             continue;
-                         }
-                    }
 
+
+                    if (playerTeam != null && myTeam != null) {
+                        continue;
+                    }
+                }
+
+
+                Location entityLoc = target.getLocation();
+                Location playerLoc = player.getLocation();
+                double diffX = entityLoc.getX() - playerLoc.getX();
+                double diffZ = entityLoc.getZ() - playerLoc.getZ();
+                if ((diffX * diffX) + (diffZ * diffZ) <= (height - entityLoc.getY() + playerLoc.getY()) * (range * range) / (height * height)) {
                     target.damage(5);
                 }
 
+
             }
+        }
 
 
 
@@ -229,9 +241,9 @@ public class SwordSaskeListener implements Listener {
      * @return
      */
     private boolean isSwordEvent(PlayerInteractEvent event, Player player){
-        return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
-                player.getInventory().getItemInMainHand().getType() == Material.DIAMOND_SWORD &&
-                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("katana saske");
+            return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
+                    player.getInventory().getItemInMainHand().getType() == Material.DIAMOND_SWORD &&
+                    player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("katana saske");
 
 
     }
