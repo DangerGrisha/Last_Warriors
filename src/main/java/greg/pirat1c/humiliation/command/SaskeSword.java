@@ -37,16 +37,16 @@ public class SaskeSword implements CommandExecutor {
 
     private ItemStack getDirt() {
 
-        ItemStack sword = new ItemStack(Material.IRON_SWORD, 1);
+        ItemStack sword = new ItemStack(Material.DIAMOND_SWORD, 1);
         ItemMeta meta = sword.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("SLAVE_DIRT");
+            meta.setDisplayName("katana saske");
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();
-            lore.add("Buy");
-            lore.add("NEW");
-            lore.add("HOUSE");
+
+            lore.add("something");
+
 
 
             meta.setLore(lore);
