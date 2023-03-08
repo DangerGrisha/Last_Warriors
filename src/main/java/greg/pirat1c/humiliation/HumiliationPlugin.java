@@ -3,10 +3,7 @@
 import greg.pirat1c.humiliation.command.*;
 import greg.pirat1c.humiliation.entity.HomeInfo;
 import greg.pirat1c.humiliation.events.FloorIce;
-import greg.pirat1c.humiliation.events.saske.BodyReplacemenListener;
-import greg.pirat1c.humiliation.events.saske.ShurikenListener;
-import greg.pirat1c.humiliation.events.saske.SwordSaskeListener;
-import greg.pirat1c.humiliation.events.saske.ThrowListener;
+import greg.pirat1c.humiliation.events.saske.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,6 +37,8 @@ import java.util.UUID;
         Bukkit.getPluginManager().registerEvents(new ShurikenListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ThrowListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BodyReplacemenListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new ResistanceAfterKillListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new SpeedAfterKillListener(this), this);
     }
 
 
