@@ -35,3 +35,6 @@ commands:
     description: give the player shuriken
   bodyReplacemen:
     description: bodyReplacemen with people people in your eyes trace (has distance limit)
+  attractionGive:
+    description: attraction item (for Saske)
+

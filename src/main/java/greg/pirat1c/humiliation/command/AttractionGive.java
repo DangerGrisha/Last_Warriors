@@ -12,9 +12,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SaskeBodyReplacemen implements CommandExecutor {
-
+public class AttractionGive implements CommandExecutor {
     private static final Material material = Material.INK_SAC;
+
 
     @Override
 
@@ -40,10 +40,11 @@ public class SaskeBodyReplacemen implements CommandExecutor {
         ItemStack sword = new ItemStack(material, 1);
         ItemMeta meta = sword.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("Body Replacement");
+            meta.setDisplayName("Attraction");
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();
+            // lore
 
             lore.add("something");
 
