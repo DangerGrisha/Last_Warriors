@@ -87,7 +87,7 @@ public class BodyReplacemenListener implements Listener {
     private boolean checkEvent(PlayerInteractEvent event, Player player){
         return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
                 player.getInventory().getItemInMainHand().getType() == Material.INK_SAC &&
-                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("body replacement");
+                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Body Replacement");
 
 
     }

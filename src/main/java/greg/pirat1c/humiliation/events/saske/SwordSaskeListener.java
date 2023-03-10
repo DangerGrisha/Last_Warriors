@@ -63,7 +63,7 @@ public class SwordSaskeListener implements Listener {
     }
 
     private boolean pushPlayerBack(Player player) {
-        Vector destDirection = player.getLocation().getDirection();
+            Vector destDirection = player.getLocation().getDirection();
 
         double z = destDirection.getZ();
         double x = destDirection.getX();
