@@ -38,7 +38,7 @@ public class SwordSaskeListener implements Listener {
         System.out.println("2");
         if (hitLocation != null) {
             System.out.println("3");
-            //playAudio(player);
+            playAudio(player);
             dealAreaDamage(player, hitLocation);
             pushEnemiesBack(player, hitLocation);
         }
@@ -74,7 +74,7 @@ public class SwordSaskeListener implements Listener {
             hitLocation = rayTraceResult.getHitBlock().getLocation();
         } else {
             // If no block is hit, calculate the location in the direction the player is looking
-            hitLocation = player.getEyeLocation().add(player.getLocation().getDirection().multiply(4));
+            hitLocation = player.getEyeLocation().add(player.getLocation().getDirection().multiply(1));
         }
 
         // Spawn particles at the location. This will be at the hit block or in the air.
@@ -83,45 +83,42 @@ public class SwordSaskeListener implements Listener {
         return hitLocation;
     }
 
-   // private void playAudio(Player player) {
-    //    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f);
-    //}
+    private void playAudio(Player player) {
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f);
+    }
 
     private void dealAreaDamage(Player player, Location hitLocation) {
-        System.out.println("4");
         World world = player.getWorld();
-        // Define the size of the damage area (assuming each block is 1 unit in size)
-        double length = 3; // Corresponding to the length of the diamond blocks
-        double width = 2; // Corresponding to the width of the diamond blocks
-        double height = 1; // Assuming we want to damage entities up to 1 block above the ground
+        // Length should just be 1 for a straight line of damage, width is the range of the sword's swipe
+        double length = 1; // Length of the sword's strike
+        double width = 2; // Width of the sword's strike, a narrow line
+        double height = 1; // Height of the damage area, 1 block above the ground
 
-        // Get the direction in which the player is looking
-        Vector direction = player.getLocation().getDirection().normalize();
+        // Calculate the direction vector relative to the player's direction
+        Vector playerDirection = player.getLocation().getDirection().normalize();
 
-        // Calculate the right and forward vectors relative to the player's direction
-        Vector right = new Vector(-direction.getZ(), 0, direction.getX()).normalize();
-        Vector forward = direction.clone().setY(0).normalize();
-        System.out.println("5");
-        // Loop through the area and damage entities
-        for (double x = -width / 2; x <= width / 2; x++) {
-            System.out.println("6");
-            for (double z = -length / 2; z <= length / 2; z++) {
-                System.out.println("7");
-                // Calculate the world coordinates of the current point in the loop
-                Location point = hitLocation.clone().add(right.clone().multiply(x)).add(forward.clone().multiply(z));
-                // Get entities in this specific point (considering a small buffer around the point)
-                Collection<Entity> entities = world.getNearbyEntities(point, 0.5, height, 0.5);
-                for (Entity entity : entities) {
-                    System.out.println("8");
-                    if (entity instanceof LivingEntity && !entity.equals(player)) {
-                        System.out.println("9");
-                        // Apply damage to the entity
-                        ((LivingEntity) entity).damage(5, player); // Damage value can be adjusted as needed
-                    }
+        // Starting point should be right in front of the player
+        Location start = hitLocation.clone().add(0, 1, 0); // Adjust y if needed to match the sword's visual effect
+
+        // Loop through the blocks in front of the player to simulate the strike
+        for (double z = 0; z < length; z++) {
+            // Calculate the current point in the strike
+            Location currentLocation = start.clone().add(playerDirection.clone().multiply(z));
+
+            // Spawn particles at this location to visualize the strike area
+            world.spawnParticle(Particle.CRIT_MAGIC, currentLocation, 1, 0.1, 0.1, 0.1, 0.01);
+
+            // Check for entities at this point (you might need a slight buffer)
+            Collection<Entity> entities = world.getNearbyEntities(currentLocation, 1, 1, 1);
+            for (Entity entity : entities) {
+                if (entity instanceof LivingEntity && !entity.equals(player)) {
+                    // Apply damage to the entity
+                    ((LivingEntity) entity).damage(5, player); // Adjust the damage value as needed
                 }
             }
         }
     }
+
 
     private void pushEnemiesBack(Player player, Location hitLocation) {
         double range = 3.0;
