@@ -1,6 +1,7 @@
 package greg.pirat1c.humiliation.events.saske;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -34,13 +35,14 @@ public class SwordSaskeListener implements Listener {
     private void executeSwordAbility(Player player) {
 
         pushPlayerBack(player);
-        Location hitLocation = generateParticles(player);
+       // Location hitLocation = generateParticles(player);
+        Vector direction = player.getLocation().getDirection().normalize();
+        Location hitLocation = player.getLocation().add(direction).add(0, player.getEyeHeight() + 1, 0);
         System.out.println("2");
         if (hitLocation != null) {
             System.out.println("3");
             playAudio(player);
-            dealAreaDamage(player, hitLocation);
-            pushEnemiesBack(player, hitLocation);
+            dealAreaDamage(player);
         }
     }
 
@@ -78,7 +80,7 @@ public class SwordSaskeListener implements Listener {
         }
 
         // Spawn particles at the location. This will be at the hit block or in the air.
-        world.spawnParticle(Particle.SWEEP_ATTACK, hitLocation.add(0.5, 0.5, 0.5), 1);
+       // world.spawnParticle(Particle.NAUTILUS, hitLocation.add(0.5, 0.5, 0.5), 1);
 
         return hitLocation;
     }
@@ -87,47 +89,82 @@ public class SwordSaskeListener implements Listener {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f);
     }
 
-    private void dealAreaDamage(Player player, Location hitLocation) {
+    private void dealAreaDamage(Player player) {
         World world = player.getWorld();
-        // Length should just be 1 for a straight line of damage, width is the range of the sword's swipe
-        double length = 1; // Length of the sword's strike
-        double width = 2; // Width of the sword's strike, a narrow line
-        double height = 1; // Height of the damage area, 1 block above the ground
+        Vector direction = player.getEyeLocation().getDirection().normalize();
 
-        // Calculate the direction vector relative to the player's direction
-        Vector playerDirection = player.getLocation().getDirection().normalize();
+        // Calculate the side direction for the left and right damage application
+        Vector sideDirection = new Vector(-direction.getZ(), 0, direction.getX()).normalize();
 
-        // Starting point should be right in front of the player
-        Location start = hitLocation.clone().add(0, 1, 0); // Adjust y if needed to match the sword's visual effect
+        // The block in front of the player where the damage will start, adjusted to eye level
+        Location frontBlock = player.getEyeLocation().add(direction);
 
-        // Loop through the blocks in front of the player to simulate the strike
-        for (double z = 0; z < length; z++) {
-            // Calculate the current point in the strike
-            Location currentLocation = start.clone().add(playerDirection.clone().multiply(z));
+        // Apply damage to the front block and one block to each side
+        applyDamageAndPushEntities(world, frontBlock, player);
+        applyDamageAndPushEntities(world, frontBlock.clone().add(sideDirection), player);
+        applyDamageAndPushEntities(world, frontBlock.clone().subtract(sideDirection.multiply(1.5)), player);
+        spawnSwordCutParticles(world, frontBlock, direction, player);
 
-            // Spawn particles at this location to visualize the strike area
-            world.spawnParticle(Particle.CRIT_MAGIC, currentLocation, 1, 0.1, 0.1, 0.1, 0.01);
+    }
 
-            // Check for entities at this point (you might need a slight buffer)
-            Collection<Entity> entities = world.getNearbyEntities(currentLocation, 1, 1, 1);
-            for (Entity entity : entities) {
-                if (entity instanceof LivingEntity && !entity.equals(player)) {
-                    // Apply damage to the entity
-                    ((LivingEntity) entity).damage(5, player); // Adjust the damage value as needed
-                }
+    private void applyDamageAndPushEntities(World world, Location location, Player player) {
+        double damageRadius = 1.0; // Radius around the block within which entities will be damaged
+        Vector pushDirection = player.getLocation().getDirection().normalize().multiply(1.5);
+
+        Collection<Entity> entities = world.getNearbyEntities(location, damageRadius, damageRadius, damageRadius);
+        for (Entity entity : entities) {
+            if (entity instanceof LivingEntity && !entity.equals(player)) {
+                LivingEntity livingEntity = (LivingEntity) entity;
+                livingEntity.damage(5.0); // Damage value, adjust as needed
+                livingEntity.setVelocity(pushDirection); // Push the entity back
+                // Optionally, spawn particles directly at the entity's location for additional effect
+                world.spawnParticle(Particle.CRIT, livingEntity.getLocation(), 5, 0.3, 0.3, 0.3, 0.05);
             }
         }
     }
+    private void spawnSwordCutParticles(World world, Location startLocation, Vector direction, Player player) {
+        world.spawnParticle(Particle.SWEEP_ATTACK, startLocation.add(0.1, 0.1, 0.1), 1);
+        // This will be the horizontal vector for the sword swing
+        Vector sideDirection = new Vector(-direction.getZ(), 0, direction.getX()).normalize();
 
+        // Adjust the Y offset to spawn particles just below the player's line of sight
+        double yOffset = -0.2;
 
-    private void pushEnemiesBack(Player player, Location hitLocation) {
-        double range = 3.0;
-        Vector direction = player.getLocation().getDirection().normalize().multiply(1.5);
-        Collection<Entity> entities = player.getWorld().getNearbyEntities(hitLocation, range, range, range);
-        for (Entity entity : entities) {
-            if (entity instanceof LivingEntity && entity != player) {
-                entity.setVelocity(direction);
-            }
+        // Define the arc/line length of the sword swing effect
+        double lineLength = 6; // Adjust if needed
+        int particleCount = 30; // Number of particles to spawn along the line
+
+        // Spawn the first line of particles
+        spawnParticleLine(world, startLocation, sideDirection, direction, yOffset, lineLength - 2, particleCount);
+        spawnParticleLineSweepAttack(world, startLocation, sideDirection, direction, yOffset, lineLength -2, particleCount-27);
+        // Spawn a second line of particles one block further forward
+        Location oneBlockFurther = startLocation.clone().add(direction);
+        spawnParticleLine(world, oneBlockFurther, sideDirection, direction, yOffset, lineLength, particleCount);
+        spawnParticleLineSweepAttack(world, oneBlockFurther, sideDirection, direction, yOffset, lineLength, particleCount-24);
+    }
+
+    private void spawnParticleLine(World world, Location startLocation, Vector sideDirection, Vector direction, double yOffset, double lineLength, int particleCount) {
+        // Calculate the points along the line of the sword swing and spawn particles
+        for (int i = 0; i < particleCount; i++) {
+            double progress = (double) i / particleCount;
+            // Calculate the offset along the sword swing line
+            Vector offset = sideDirection.clone().multiply(progress * lineLength - (lineLength / 2));
+            // Set the particle location just below the player's line of sight
+            Location particleLocation = startLocation.clone().add(offset).add(0, yOffset, 0);
+            // Spawn the particle at the calculated location
+            world.spawnParticle(Particle.NAUTILUS, particleLocation, 1, 0.3, 0.1, 0.3, 0);
+        }
+    }
+    private void spawnParticleLineSweepAttack(World world, Location startLocation, Vector sideDirection, Vector direction, double yOffset, double lineLength, int particleCount) {
+        // Calculate the points along the line of the sword swing and spawn particles
+        for (int i = 0; i < particleCount; i++) {
+            double progress = (double) i / particleCount;
+            // Calculate the offset along the sword swing line
+            Vector offset = sideDirection.clone().multiply(progress * lineLength - (lineLength / 2));
+            // Set the particle location just below the player's line of sight
+            Location particleLocation = startLocation.clone().add(offset).add(0, yOffset, 0);
+            // Spawn the particle at the calculated location
+            world.spawnParticle(Particle.SWEEP_ATTACK, particleLocation, 1, 0.3, 0.1, 0.3, 0);
         }
     }
 }
