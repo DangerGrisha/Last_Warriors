@@ -1,14 +1,6 @@
 package greg.pirat1c.humiliation.events.saske;
 
-import greg.pirat1c.humiliation.utils.tuple.Tuple;
-import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Chicken;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -17,240 +9,128 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Team;
-import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
-import sun.java2d.loops.DrawGlyphListAA;
+import org.bukkit.util.RayTraceResult;
+
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 public class SwordSaskeListener implements Listener {
 
-    public static final String DIAMOND_SWORD = "DIAMOND_SWORD";
     private JavaPlugin plugin;
+
     public SwordSaskeListener(JavaPlugin plugin) {
-
-
         this.plugin = plugin;
-
     }
+
     @EventHandler
-    public void validateAndExecuteEvent(PlayerInteractEvent event){
-        if(isSwordEvent(event, event.getPlayer())) {
-            executeEvent(event);
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        if (isSwordEvent(event, player)) {
+            executeSwordAbility(player);
         }
     }
 
-    private void executeEvent(PlayerInteractEvent event) {
-
-        Player player = event.getPlayer();
+    private void executeSwordAbility(Player player) {
 
         pushPlayerBack(player);
-        Optional<Tuple<BlockFace, Location>> hitOptional = generateParticles(player);
-        // only if block was hit
-        if (hitOptional.isPresent()) {
-            Tuple<BlockFace, Location> hitLocation = hitOptional.get();
-            playAudio(player);
-            dealAreaDamage(player.getWorld(), hitLocation.getLeft(), hitLocation.getRight(), player);
-            pushEnemyBack();
-            System.out.println(event);
-
+        Location hitLocation = generateParticles(player);
+        System.out.println("2");
+        if (hitLocation != null) {
+            System.out.println("3");
+            //playAudio(player);
+            dealAreaDamage(player, hitLocation);
+            pushEnemiesBack(player, hitLocation);
         }
-
-
     }
 
-    private boolean pushPlayerBack(Player player) {
-            Vector destDirection = player.getLocation().getDirection();
-
-        double z = destDirection.getZ();
-        double x = destDirection.getX();
-        double y = destDirection.getY();
-
-        // according scientifically proven formula
-        // the push should be HARDER once the player looking forward : y == 0
-        // however, the push will be the same strength if player looking completely downwards : y == -1
-        // therefore the formula for the player y direction vector push would be : f( Y ) = -y/2 + 1/2;
-        double modifiedY = (y - 1.0) / 2.0;
-
-        destDirection.setZ(z * -1);
-        destDirection.setX(x * -1);
-        destDirection.setY(modifiedY * -1);
-        player.setVelocity(destDirection);
-
-        return true;
+    private boolean isSwordEvent(PlayerInteractEvent event, Player player) {
+        return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
+                && player.getInventory().getItemInMainHand().getType() == Material.DIAMOND_SWORD
+                && player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("katana saske");
     }
 
-    private Optional<Tuple<BlockFace, Location>> generateParticles(Player player){
-        RayTraceResult rayTraceResult = player.getWorld().rayTrace(
+    private void pushPlayerBack(Player player) {
+        Vector direction = player.getLocation().getDirection().multiply(-0.5);
+        player.setVelocity(player.getVelocity().add(direction));
+    }
+
+    private Location generateParticles(Player player) {
+        World world = player.getWorld();
+        RayTraceResult rayTraceResult = world.rayTrace(
                 player.getEyeLocation(),
                 player.getLocation().getDirection(),
                 4,
-                FluidCollisionMode.ALWAYS,
-                false,
-                1.0,
-                null
+                FluidCollisionMode.NEVER,
+                true,
+                1,
+                (entity) -> !entity.equals(player)
         );
-        if (rayTraceResult != null) {
 
-            System.out.println(rayTraceResult.getHitBlock());
-            System.out.println(rayTraceResult.getHitEntity());
-            System.out.println(rayTraceResult.getHitBlockFace());
-            System.out.println(rayTraceResult.getHitPosition());
+        Location hitLocation;
 
-            BlockFace blockFace = rayTraceResult.getHitBlockFace();
-            boolean isBlock = rayTraceResult.getHitBlock() != null;
-            boolean isPlayer = player.equals(rayTraceResult.getHitEntity());
-
-            Location hitLocation = isBlock
-                    ? rayTraceResult.getHitBlock().getLocation()
-                    : rayTraceResult.getHitEntity().getLocation();
-
-            // in case if player hits just in the air, we show the particles 4 block in front of it
-            double playerMultiplier = isPlayer ? 4.0 : 1.0;
-
-
-            switch (blockFace) {
-                case UP:hitLocation.setY(hitLocation.getY() + playerMultiplier);
-                case DOWN:hitLocation.setY(hitLocation.getY() - playerMultiplier);
-                case NORTH:hitLocation.setZ(hitLocation.getZ() - playerMultiplier);
-                case SOUTH:hitLocation.setZ(hitLocation.getZ() + playerMultiplier);
-                case EAST:hitLocation.setX(hitLocation.getX() + playerMultiplier);
-                case WEST:hitLocation.setX(hitLocation.getX() - playerMultiplier);
-            }
-
-            System.out.println("particle is generated at: " + hitLocation);
-            player.getLocation().getWorld().spawnParticle(Particle.SWEEP_ATTACK, hitLocation, 1 );
-            return Optional.of(Tuple.of(blockFace, hitLocation));
+        if (rayTraceResult != null && rayTraceResult.getHitBlock() != null) {
+            // If a block is hit, get that location
+            hitLocation = rayTraceResult.getHitBlock().getLocation();
         } else {
-            System.out.println("empty result");
+            // If no block is hit, calculate the location in the direction the player is looking
+            hitLocation = player.getEyeLocation().add(player.getLocation().getDirection().multiply(4));
         }
-        return Optional.empty();
 
+        // Spawn particles at the location. This will be at the hit block or in the air.
+        world.spawnParticle(Particle.SWEEP_ATTACK, hitLocation.add(0.5, 0.5, 0.5), 1);
+
+        return hitLocation;
     }
 
-    /**
-     * Divide all health by 2
-     * @param world the world you are playing in
-     * @param location the location of the damage
-     * @return
-     */
-    private boolean dealAreaDamage(World world, BlockFace direction, Location location, Player player) {
-        /**
-         *
+   // private void playAudio(Player player) {
+    //    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.0f);
+    //}
 
-        System.out.println("dealing area damage");
+    private void dealAreaDamage(Player player, Location hitLocation) {
+        System.out.println("4");
+        World world = player.getWorld();
+        // Define the size of the damage area (assuming each block is 1 unit in size)
+        double length = 3; // Corresponding to the length of the diamond blocks
+        double width = 2; // Corresponding to the width of the diamond blocks
+        double height = 1; // Assuming we want to damage entities up to 1 block above the ground
 
+        // Get the direction in which the player is looking
+        Vector direction = player.getLocation().getDirection().normalize();
 
-
-        boolean isZDirection = direction == BlockFace.NORTH || direction == BlockFace.SOUTH;
-
-        Collection<Entity> entities = world.getNearbyEntities(location, isZDirection ? 1 : 4,isZDirection ? 4 : 1, 4);
-        for (Entity entity : entities) {
-            if (entity instanceof Player) {
-                Player anotherPlayer = (Player) entity;
-                double totalHealth = anotherPlayer.getHealth();
-                anotherPlayer.damage(totalHealth / 2);
-            }
-        }
-
-        //for testing purposes
-
-        //TODO: wrong calculatioons, the damage area should be perpendicular to the payer's vision ray
-
-        Location bubbleLocation = location.clone();
-        if (isZDirection) {
-            bubbleLocation.setZ(bubbleLocation.getZ() - 2);
-        } else {
-            bubbleLocation.setX(bubbleLocation.getX() - 2);
-        }
-        for (int i = 0; i < 4; i++) {
-            world.spawn(bubbleLocation, Chicken.class);
-            if (isZDirection) {
-                bubbleLocation.setZ(bubbleLocation.getZ() + 1);
-            } else {
-                bubbleLocation.setX(bubbleLocation.getX() + 1);
-            }
-        }
-         */
-
-        player.getScoreboard().getTeam(player.getName());
-        World playerWorld = player.getWorld();
-        Location playerLocation = player.getLocation();
-        double range = 3.0;
-        double height = 2.0;
-        //List<Entity> entities = player.getNearbyEntities(4, 1, 4);
-
-        for (Entity entity :  world.getNearbyEntities(location, range, height, range)) {
-
-            if (entity instanceof LivingEntity) {
-                LivingEntity target = (LivingEntity) entity;
-                // Проверяем, является ли сущность игроком
-                if (target instanceof Player) {
-
-
-                    /*if (!target.getScoreboard().getTeam(target.getName()).equals(player.getScoreboard().getTeam(player.getName()))) {
-                     */
-                    Team playerTeam = ((Player) target).getScoreboard().getEntryTeam(target.getName());
-                    Team myTeam = player.getScoreboard().getEntryTeam(player.getName());
-
-
-                    if (playerTeam != null && myTeam != null) {
-                        continue;
+        // Calculate the right and forward vectors relative to the player's direction
+        Vector right = new Vector(-direction.getZ(), 0, direction.getX()).normalize();
+        Vector forward = direction.clone().setY(0).normalize();
+        System.out.println("5");
+        // Loop through the area and damage entities
+        for (double x = -width / 2; x <= width / 2; x++) {
+            System.out.println("6");
+            for (double z = -length / 2; z <= length / 2; z++) {
+                System.out.println("7");
+                // Calculate the world coordinates of the current point in the loop
+                Location point = hitLocation.clone().add(right.clone().multiply(x)).add(forward.clone().multiply(z));
+                // Get entities in this specific point (considering a small buffer around the point)
+                Collection<Entity> entities = world.getNearbyEntities(point, 0.5, height, 0.5);
+                for (Entity entity : entities) {
+                    System.out.println("8");
+                    if (entity instanceof LivingEntity && !entity.equals(player)) {
+                        System.out.println("9");
+                        // Apply damage to the entity
+                        ((LivingEntity) entity).damage(5, player); // Damage value can be adjusted as needed
                     }
                 }
-
-
-                Location entityLoc = target.getLocation();
-                Location playerLoc = player.getLocation();
-                double diffX = entityLoc.getX() - playerLoc.getX();
-                double diffZ = entityLoc.getZ() - playerLoc.getZ();
-                if ((diffX * diffX) + (diffZ * diffZ) <= (height - entityLoc.getY() + playerLoc.getY()) * (range * range) / (height * height)) {
-                    target.damage(5);
-                }
-
-
             }
         }
-
-
-
-        return false;
     }
 
-    /**
-     * optional operation, not supported yet
-     * @return true if operation succeeds
-     */
-    private boolean pushEnemyBack() {
-        return false;
+    private void pushEnemiesBack(Player player, Location hitLocation) {
+        double range = 3.0;
+        Vector direction = player.getLocation().getDirection().normalize().multiply(1.5);
+        Collection<Entity> entities = player.getWorld().getNearbyEntities(hitLocation, range, range, range);
+        for (Entity entity : entities) {
+            if (entity instanceof LivingEntity && entity != player) {
+                entity.setVelocity(direction);
+            }
+        }
     }
-
-    private boolean playAudio(Player player) {
-        Sound sound = Sound.ENTITY_PLAYER_ATTACK_SWEEP;
-        player.getWorld().playSound(player.getLocation(), sound, 1.0f, 1.0f);
-        return true;
-    }
-
-    /** validate if event s sasake sword event
-     *
-     * @param event
-     * @param player
-     * @return
-     */
-    private boolean isSwordEvent(PlayerInteractEvent event, Player player){
-            return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
-                    player.getInventory().getItemInMainHand().getType() == Material.DIAMOND_SWORD &&
-                    player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("katana saske");
-
-
-    }
-
-
-
-
-
-
 }
