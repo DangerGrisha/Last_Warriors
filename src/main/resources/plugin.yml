@@ -37,4 +37,6 @@ commands:
     description: bodyReplacemen with people people in your eyes trace (has distance limit)
   attractionGive:
     description: attraction item (for Saske)
+  chidoryGive:
+    description: chidory item ability (for Saske)
 

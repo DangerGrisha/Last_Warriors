@@ -41,6 +41,7 @@ import java.util.UUID;
         getCommand("shuriken").setExecutor(new SnowShuriken());
         getCommand("bodyReplacemen").setExecutor(new SaskeBodyReplacemen());
         getCommand("attractionGive").setExecutor(new AttractionGive());
+        getCommand("chidoryGive").setExecutor(new ChidoryGive());
 
        // Bukkit.getPluginManager().registerEvents(new Events(), this);
         Bukkit.getPluginManager().registerEvents(new FloorIce(this), this);
@@ -51,6 +52,7 @@ import java.util.UUID;
         Bukkit.getPluginManager().registerEvents(new ResistanceAfterKillListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SpeedAfterKillListener(this), this);
         Bukkit.getPluginManager().registerEvents(new AttractionListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new ChidoryListener(this), this);
         //Bukkit.getPluginManager().registerEvents(new SwordTest(this), this);
 
         //PluginManager pluginManager = Bukkit.getPluginManager();
