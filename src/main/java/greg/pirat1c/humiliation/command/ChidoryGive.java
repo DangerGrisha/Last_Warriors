@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ChidoryGive implements CommandExecutor {
+public class  ChidoryGive implements CommandExecutor {
     private static final Material material = Material.INK_SAC;
     @Override
 
