@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AttractionGive implements CommandExecutor {
-    private static final Material material = Material.INK_SAC;
+    private static final Material material = Material.BEDROCK;
 
 
     @Override
