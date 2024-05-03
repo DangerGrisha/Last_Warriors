@@ -39,4 +39,6 @@ commands:
     description: attraction item (for Saske)
   chidoryGive:
     description: chidory item ability (for Saske)
+  sniperGive:
+    description: lady nagan's sniper item ability
 

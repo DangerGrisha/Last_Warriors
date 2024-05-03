@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SaskeBodyReplacemen implements CommandExecutor {
+public class SaskeBodyReplacement implements CommandExecutor {
 
     private static final Material material = Material.INK_SAC;
 
