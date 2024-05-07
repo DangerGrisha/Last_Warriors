@@ -1,11 +1,13 @@
 package greg.pirat1c.humiliation.events.ledynagan;
 
 import org.bukkit.Bukkit;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,6 +24,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.Objects;
@@ -128,6 +131,8 @@ public class SniperListener implements Listener {
         armorStandTaskId = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (!armorStand.isDead()) {
                 updateNextLocation(finalDirection);
+
+                // Check for collisions
                 checkBulletCollision(armorStand);
 
                 // Add a slight upward velocity to counteract gravity
@@ -157,6 +162,7 @@ public class SniperListener implements Listener {
                     }
                 }
                 armorStand.setVelocity(finalDirection.normalize().multiply(1)); // Set weak motion forward
+                checkBulletCollision(armorStand);
             }
         }, 0L, 2L).getTaskId(); // 0 tick delay, 2 tick interval (10 ticks per second)
 
@@ -203,29 +209,32 @@ public class SniperListener implements Listener {
         Location bulletLocation = bullet.getLocation();
         nextLocation = bulletLocation.clone().add(bullet.getVelocity());
 
+        // Create a ray from the bullet's current location to the next location
+        RayTraceResult result = bulletLocation.getWorld().rayTrace(bulletLocation, bullet.getVelocity(), bullet.getVelocity().length() + 1, FluidCollisionMode.NEVER, true, 0, null);
 
+        if (result != null && result.getHitBlock() != null) {
+            // Block is hit, remove the bullet
+            bullet.remove();
+            // You may also play a sound indicating the collision with the block
+            bulletLocation.getWorld().playSound(bulletLocation, Sound.BLOCK_GLASS_BREAK, 1.0f, 1.0f);
+            return;
+        }
 
         // Check for player nearby the bullet's next location
         for (Player nearbyPlayer : Bukkit.getOnlinePlayers()) {
             if (nearbyPlayer.getLocation().distance(nextLocation) <= 1.0) { // Adjust the value based on the bullet's speed
-
                 if (!nearbyPlayer.isInvulnerable()) {
-
                     nearbyPlayer.damage(damageOfBullet);
-
                     nearbyPlayer.getWorld().playSound(nearbyPlayer.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0f, 1.0f);
                 }
                 bullet.remove(); // Remove the bullet
                 return;
             }
         }
-        // Check if the bullet is colliding with a block
-        if (nextLocation.getBlock().getType().isSolid()) {
-            // Bullet hits a block, remove the bullet
-            bullet.remove();
-            return;
-        }
     }
+
+
+
 
 
     private Player GetPlayerNearbyOfBullet(Location location,Player owner) {
