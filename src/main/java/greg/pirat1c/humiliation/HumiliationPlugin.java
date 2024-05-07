@@ -12,9 +12,11 @@ import greg.pirat1c.humiliation.command.SnowShuriken;
 import greg.pirat1c.humiliation.command.SpawnCommand;
 import greg.pirat1c.humiliation.command.SpawnHome;
 import greg.pirat1c.humiliation.command.TestSpawnCommand;
+import greg.pirat1c.humiliation.command.ledynagan.FlyGive;
 import greg.pirat1c.humiliation.command.ledynagan.SniperGive;
 import greg.pirat1c.humiliation.entity.HomeInfo;
 import greg.pirat1c.humiliation.events.FloorIce;
+import greg.pirat1c.humiliation.events.ledynagan.FlyListener;
 import greg.pirat1c.humiliation.events.ledynagan.SniperListener;
 
 import greg.pirat1c.humiliation.events.saske.AttractionListener;
@@ -26,6 +28,7 @@ import greg.pirat1c.humiliation.events.saske.SpeedAfterKillListener;
 import greg.pirat1c.humiliation.events.saske.SwordSaskeListener;
 import greg.pirat1c.humiliation.events.saske.ThrowListener;
 import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -54,6 +57,7 @@ public final class HumiliationPlugin extends JavaPlugin {
         getCommand("attractionGive").setExecutor(new AttractionGive());
         getCommand("chidoryGive").setExecutor(new ChidoryGive());
         getCommand("sniperGive").setExecutor(new SniperGive());
+        getCommand("flyGive").setExecutor(new FlyGive());
 
         // Bukkit.getPluginManager().registerEvents(new Events(), this);
         Bukkit.getPluginManager().registerEvents(new FloorIce(this), this);
@@ -66,6 +70,7 @@ public final class HumiliationPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new AttractionListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ChidoryListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SniperListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new FlyListener(this),this);
         //Bukkit.getPluginManager().registerEvents(new SwordTest(this), this);
         //PluginManager pluginManager = Bukkit.getPluginManager();
         //Bukkit.getPluginManager().registerEvents(new SlimeSoccerListener(this), this);
