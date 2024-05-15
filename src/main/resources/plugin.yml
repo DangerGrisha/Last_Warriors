@@ -43,4 +43,6 @@ commands:
     description: lady nagan's sniper item ability
   flyGive:
     description: lady nagan's fly ability
+  explosionGive:
+    description: lady nagan's explode perk
 

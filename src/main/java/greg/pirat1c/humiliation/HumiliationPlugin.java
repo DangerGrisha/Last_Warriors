@@ -12,10 +12,12 @@ import greg.pirat1c.humiliation.command.SnowShuriken;
 import greg.pirat1c.humiliation.command.SpawnCommand;
 import greg.pirat1c.humiliation.command.SpawnHome;
 import greg.pirat1c.humiliation.command.TestSpawnCommand;
+import greg.pirat1c.humiliation.command.ledynagan.ExplosionGive;
 import greg.pirat1c.humiliation.command.ledynagan.FlyGive;
 import greg.pirat1c.humiliation.command.ledynagan.SniperGive;
 import greg.pirat1c.humiliation.entity.HomeInfo;
 import greg.pirat1c.humiliation.events.FloorIce;
+import greg.pirat1c.humiliation.events.ledynagan.ExplosionListener;
 import greg.pirat1c.humiliation.events.ledynagan.FlyListener;
 import greg.pirat1c.humiliation.events.ledynagan.SniperListener;
 
@@ -58,6 +60,7 @@ public final class HumiliationPlugin extends JavaPlugin {
         getCommand("chidoryGive").setExecutor(new ChidoryGive());
         getCommand("sniperGive").setExecutor(new SniperGive());
         getCommand("flyGive").setExecutor(new FlyGive());
+        getCommand("explosionGive").setExecutor(new ExplosionGive());
 
         // Bukkit.getPluginManager().registerEvents(new Events(), this);
         Bukkit.getPluginManager().registerEvents(new FloorIce(this), this);
@@ -71,6 +74,7 @@ public final class HumiliationPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ChidoryListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SniperListener(this), this);
         Bukkit.getPluginManager().registerEvents(new FlyListener(this),this);
+        Bukkit.getPluginManager().registerEvents(new ExplosionListener(this),this);
         //Bukkit.getPluginManager().registerEvents(new SwordTest(this), this);
         //PluginManager pluginManager = Bukkit.getPluginManager();
         //Bukkit.getPluginManager().registerEvents(new SlimeSoccerListener(this), this);

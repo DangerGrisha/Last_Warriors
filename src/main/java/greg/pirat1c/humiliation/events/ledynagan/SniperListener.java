@@ -101,6 +101,8 @@ public class SniperListener implements Listener {
                     armorLocation = armorStand.getLocation();
                     if(isPlayerNearbyOfBullet(armorLocation,player) && armorLocation != null){
                         changedDirectionOfBullet = true;
+                        ItemStack crossbow = createT742KMoriCrossbow();
+                        player.getInventory().setItemInMainHand(crossbow);
                         //System.out.println("A3");
                     }
 
@@ -112,6 +114,8 @@ public class SniperListener implements Listener {
                     Vector direction = eyeLocation.getDirection();
                     armorStand = SummonArmorStand(player, eyeLocation, direction);
                     shoot(player,armorStand,direction);
+                    ItemStack crossbow = createT742KMoriCrossbowModified();
+                    player.getInventory().setItemInMainHand(crossbow);
                 }
 
             }
@@ -298,6 +302,19 @@ public class SniperListener implements Listener {
 
         return crossbow;
     }
+    private ItemStack createT742KMoriCrossbowModified() {
+        ItemStack crossbow = new ItemStack(Material.CROSSBOW);
+        crossbow.setDurability((short)crossbow.getType().getMaxDurability());
+        ItemMeta meta = crossbow.getItemMeta();
+        meta.setDisplayName("T-742K Mori+");
+        crossbow.setItemMeta(meta);
+        ItemStack arrow = new ItemStack(Material.ARROW);
+        CrossbowMeta crossbowMeta = (CrossbowMeta) crossbow.getItemMeta();
+        crossbowMeta.addChargedProjectile(arrow);
+        crossbow.setItemMeta(crossbowMeta);
+
+        return crossbow;
+    }
 
     @EventHandler
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
@@ -344,17 +361,17 @@ public class SniperListener implements Listener {
     }
 
     private boolean checkEventForRightClick(PlayerInteractEvent event, Player player) {
-        return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
+        return ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
                 player.getInventory().getItemInMainHand().getType() == Material.STICK &&
                 player.getInventory().getItemInMainHand().hasItemMeta() &&
                 player.getInventory().getItemInMainHand().getItemMeta().hasDisplayName() &&
-                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("T-742K Mori");
+                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("T-742K Mori"));
     }
     private boolean checkEventForRightClickOnCrossbow(PlayerInteractEvent event, Player player) {
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
         if (itemInMainHand != null && itemInMainHand.getType() == Material.CROSSBOW && itemInMainHand.hasItemMeta()) {
             ItemMeta meta = itemInMainHand.getItemMeta();
-            return meta.hasDisplayName() && meta.getDisplayName().equals("T-742K Mori");
+            return meta.hasDisplayName() && (meta.getDisplayName().equals("T-742K Mori") || meta.getDisplayName().equals("T-742K Mori+"));
         }
         return false;
     }
