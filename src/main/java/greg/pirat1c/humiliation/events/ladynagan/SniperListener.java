@@ -1,13 +1,11 @@
-package greg.pirat1c.humiliation.events.ledynagan;
+package greg.pirat1c.humiliation.events.ladynagan;
 
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,7 +25,7 @@ import org.bukkit.scoreboard.Team;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import java.util.Objects;
+import static greg.pirat1c.humiliation.events.ladynagan.LadyConstants.SNIPER_RIFLE_NAME;
 
 public class SniperListener implements Listener {
 
@@ -53,14 +51,27 @@ public class SniperListener implements Listener {
     public SniperListener(JavaPlugin plugin) {
         this.plugin = plugin;
     }
-
+    private boolean isInteracted = false;
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
+        //cacel shoot from crossbow -> bag
+        if(checkEventForRightClickOnCrossbow(event,player) && isInteracted){
+            event.setCancelled(true);
+        }
         // Check if the event corresponds to right-click with "T-742K Mori" stick or crossbow
-        if (checkEventForRightClick(event, player) || checkEventForRightClickOnCrossbow(event, player)) {
+        if ((checkEventForRightClick(event, player) || checkEventForRightClickOnCrossbow(event, player)) && !isInteracted) {
             event.setCancelled(true); // Cancel the action to prevent hitting
+
+            // we are making a delay to prevent a bug with fast reuse
+            isInteracted = true;
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    isInteracted = false;
+                }
+            }.runTaskLater(plugin, 2); // 2 ticks = 0.1 seconds
 
             // If right mouse button is clicked
             if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -119,6 +130,7 @@ public class SniperListener implements Listener {
                 }
 
             }
+
         }
     }
     //Shoot System Shoot SystemShoot SystemShoot SystemShoot System Shoot System
@@ -306,7 +318,7 @@ public class SniperListener implements Listener {
         ItemStack crossbow = new ItemStack(Material.CROSSBOW);
         crossbow.setDurability((short)crossbow.getType().getMaxDurability());
         ItemMeta meta = crossbow.getItemMeta();
-        meta.setDisplayName("T-742K Mori+");
+        meta.setDisplayName(SNIPER_RIFLE_NAME);
         crossbow.setItemMeta(meta);
         ItemStack arrow = new ItemStack(Material.ARROW);
         CrossbowMeta crossbowMeta = (CrossbowMeta) crossbow.getItemMeta();

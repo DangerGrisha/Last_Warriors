@@ -1,7 +1,5 @@
-package greg.pirat1c.humiliation.events.ledynagan;
+package greg.pirat1c.humiliation.events.ladynagan;
 
-import greg.pirat1c.humiliation.events.ledynagan.DyeUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,9 +12,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+/**
+ * ExplosionListener responsible for lady's explosion ability
+ * player can set up herself to explode on ability activation
+ * ability has cooldown
+ */
 public class ExplosionListener implements Listener {
     private final JavaPlugin plugin;
-    private final String tagCheck = "LedyNagan";
+    private final String tagCheck = LadyConstants.LADY_TAG;
     private final String dyeName = "Self-Destruction";
     private final Long delayPerk = 400L;
 
@@ -47,11 +50,16 @@ public class ExplosionListener implements Listener {
         }
     }
 
+    /**
+     * Setting ability to explode yourself to cooldown
+     * @param player
+     */
     private void replaceGreenDyeWithYellow(Player player) {
         ItemStack[] contents = player.getInventory().getContents();
         for (int i = 0; i < contents.length; i++) {
             ItemStack item = contents[i];
-            if (item != null && item.getType() == Material.GREEN_DYE && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(dyeName)) {
+            if (item != null && item.getType() == Material.GREEN_DYE && item.hasItemMeta() &&
+                    item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(dyeName)) {
                 // Replace the green dye with a yellow dye
                 player.getInventory().setItem(i, DyeUtil.createYellowDye(dyeName));
                 break;
@@ -70,13 +78,22 @@ public class ExplosionListener implements Listener {
         }
     }
 
-
+    private boolean isInteracted = false;
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
+
         Player player = event.getPlayer();
-        if (player.getScoreboardTags().contains(tagCheck) && checkEventForRightClick(event, player)) {
+        if ((player.getScoreboardTags().contains(tagCheck) && checkEventForRightClick(event, player)) && !isInteracted) {
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
             if (itemInHand.getType() == Material.RED_DYE || itemInHand.getType() == Material.GREEN_DYE) {
+                // we are making a delay to prevent a bug with fast reuse
+                isInteracted = true;
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        isInteracted = false;
+                    }
+                }.runTaskLater(plugin, 2); // 2 ticks = 0.1 seconds
                 // Switch red dye to green and vice versa
                 if (itemInHand.getType() == Material.RED_DYE) {
                     itemInHand.setType(Material.GREEN_DYE);

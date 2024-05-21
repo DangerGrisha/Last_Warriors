@@ -1,4 +1,4 @@
-package greg.pirat1c.humiliation.command.ledynagan;
+package greg.pirat1c.humiliation.command.ladynagan;
 
 
 import org.bukkit.Material;
