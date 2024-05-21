@@ -92,7 +92,6 @@ public class SpawnCommand implements CommandExecutor {
 
         spawnedEntity.setVelocity(direction);
         spawnedEntity.setGlowing(true);
-
     }
 
 

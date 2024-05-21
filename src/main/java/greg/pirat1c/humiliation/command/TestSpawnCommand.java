@@ -10,11 +10,11 @@ public class TestSpawnCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
         Player player = (Player) sender;
 
         player.getWorld().spawnEntity(player.getLocation(), EntityType.FROG);
 
         return true;
     }
+
 }

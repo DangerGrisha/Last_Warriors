@@ -33,7 +33,7 @@ commands:
     description: give the player sword
   shuriken:
     description: give the player shuriken
-  bodyReplacemen:
+  bodyReplacement:
     description: bodyReplacemen with people people in your eyes trace (has distance limit)
   attractionGive:
     description: attraction item (for Saske)
@@ -45,4 +45,6 @@ commands:
     description: lady nagan's fly ability
   explosionGive:
     description: lady nagan's explode perk
+  trapGive:
+    description: lady nagan's trap
 

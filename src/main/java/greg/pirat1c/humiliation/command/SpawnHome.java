@@ -15,11 +15,8 @@ public class SpawnHome implements CommandExecutor {
         Player player = (Player) sender;
         Location location = new Location(player.getWorld(), 60, 144, 164, 90, 0);
 
-        //System.out.println("Position: " + player.getLocation());
-
         player.teleport(location);
 
-        //System.out.println("Position after teleport: " + player.getLocation());
         sender.sendMessage("You have been teleported to spawn");
         return false;
     }

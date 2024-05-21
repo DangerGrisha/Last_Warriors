@@ -38,16 +38,16 @@ public class AttractionListener implements Listener {
     }
 
 
-    private void startBlockRemoval(Block block) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (block.getType() == Material.BEDROCK) {
-                    block.setType(Material.AIR);
+        private void startBlockRemoval(Block block) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (block.getType() == Material.BEDROCK) {
+                        block.setType(Material.AIR);
+                    }
                 }
-            }
-        }.runTaskLater(plugin, 20L);
-    }
+            }.runTaskLater(plugin, 20L);
+        }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {

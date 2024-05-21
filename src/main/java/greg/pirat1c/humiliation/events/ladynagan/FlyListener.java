@@ -1,4 +1,4 @@
-package greg.pirat1c.humiliation.events.ledynagan;
+package greg.pirat1c.humiliation.events.ladynagan;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,8 +13,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class FlyListener implements Listener {
     private final JavaPlugin plugin;
@@ -113,17 +116,16 @@ public class FlyListener implements Listener {
     }
 
     private boolean checkEventForRightClickForFly(PlayerInteractEvent event, Player player) {
+        final Set<String> flyOptions = new HashSet<>(Arrays.asList(
+                "Fly+", "Fly+ 1", "Fly+ 2", "Fly+ 3", "Fly+ 4", "Fly+ 5", "Fly+ 6"));
+        final ItemStack mainHand = player.getInventory().getItemInMainHand();
+        final ItemMeta mainHandItemMeta = mainHand.hasItemMeta() ? mainHand.getItemMeta() : null;
+
         return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
-                player.getInventory().getItemInMainHand().getType() == Material.FEATHER &&
-                player.getInventory().getItemInMainHand().hasItemMeta() &&
-                player.getInventory().getItemInMainHand().getItemMeta().hasDisplayName() &&
-                (player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Fly+") ||
-                        player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Fly+ 6") ||
-                        player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Fly+ 5") ||
-                        player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Fly+ 4") ||
-                        player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Fly+ 3") ||
-                        player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Fly+ 2") ||
-                        player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Fly+ 1"));
+                mainHand.getType() == Material.FEATHER &&
+                mainHand.hasItemMeta() &&
+                mainHandItemMeta.hasDisplayName() &&
+                flyOptions.contains(mainHandItemMeta.getDisplayName());
     }
 
     private void placeInvisibleBlockUnderPlayer(Player player) {

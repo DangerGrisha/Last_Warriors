@@ -1,4 +1,4 @@
-package greg.pirat1c.humiliation.command;
+package greg.pirat1c.humiliation.command.ladynagan;
 
 
 import org.bukkit.Material;
@@ -12,13 +12,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SaskeBodyReplacement implements CommandExecutor {
-
-    private static final Material material = Material.INK_SAC;
+public class FlyGive implements CommandExecutor {
+    private static final Material material = Material.FEATHER;
+    private static final String displayName = "Start Fly";
 
     @Override
-
-
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
 
         Player player = (Player) sender;
@@ -36,11 +34,10 @@ public class SaskeBodyReplacement implements CommandExecutor {
     }
 
     private ItemStack getItem() {
-
         ItemStack sword = new ItemStack(material, 1);
         ItemMeta meta = sword.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("Body Replacement");
+            meta.setDisplayName(displayName);
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();

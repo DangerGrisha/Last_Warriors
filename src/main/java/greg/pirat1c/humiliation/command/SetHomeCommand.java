@@ -24,9 +24,6 @@ public class SetHomeCommand implements CommandExecutor {
         UUID pID = player.getUniqueId();
         playerIdToHomeInfo.put(pID,new HomeInfo(currentXYZ));
 
-
-
-
         return false;
     }
 }
