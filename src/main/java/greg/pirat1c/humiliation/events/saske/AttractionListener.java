@@ -39,14 +39,17 @@ public class AttractionListener implements Listener {
 
 
         private void startBlockRemoval(Block block) {
-            new BukkitRunnable() {
+            if (block.getType() == Material.BEDROCK) {
+                block.setType(Material.AIR);
+            }
+             /*new BukkitRunnable() {
                 @Override
                 public void run() {
                     if (block.getType() == Material.BEDROCK) {
                         block.setType(Material.AIR);
                     }
                 }
-            }.runTaskLater(plugin, 20L);
+            }.runTaskLater(plugin, 0L);*/
         }
 
     @EventHandler
@@ -60,11 +63,11 @@ public class AttractionListener implements Listener {
             Block blockToPlace = clickedBlock.getRelative(event.getBlockFace());
             if (blockToPlace.getType() == Material.AIR) {
                 spawnParticlesAroundBlock(blockToPlace.getLocation());
-                blockToPlace.setType(Material.BEDROCK);
+                //blockToPlace.setType(Material.BEDROCK);
                 Location loc = blockToPlace.getLocation();
+                startBlockRemoval(blockToPlace);
                 replaceBlockWithArmorStand(loc);
                 startAttraction(loc, player);
-                startBlockRemoval(blockToPlace);
             }
         }
     }

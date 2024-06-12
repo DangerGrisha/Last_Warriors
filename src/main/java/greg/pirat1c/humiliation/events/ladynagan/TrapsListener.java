@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -57,7 +58,7 @@ public class TrapsListener implements Listener {
     }
 
     private void placeMine(PlayerInteractEvent event, Player player, Block clickedBlock,  String playerTeam) {
-        log("placeMine");
+        //log("placeMine");
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND &&
                 player.getInventory().getItemInMainHand().getType() == setUpBlock &&
                 TRAP_NAME.equals(player.getInventory().getItemInMainHand().getItemMeta().getDisplayName())) {
@@ -67,7 +68,7 @@ public class TrapsListener implements Listener {
                 //blockToPlace.setType(setUpBlock);
                 Location loc = blockToPlace.getLocation();
 
-                blockToPlace.setType(Material.AIR);
+               // blockToPlace.setType(Material.AIR);
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -79,7 +80,7 @@ public class TrapsListener implements Listener {
                             addToRedTeam(armorStand);
                         }
                     }
-                }.runTaskLater(plugin, 5);
+                }.runTaskLater(plugin, 0);
 
             }
         }
@@ -145,10 +146,11 @@ public class TrapsListener implements Listener {
         armorStand.setCanPickupItems(false);
         //armorStand.setInvulnerable(false);
         armorStand.setBasePlate(false);
-        // armorStand.setMarker(true);
-        armorStand.setCustomName("Trap");
+        //if we add true in marker , armorstand will be Invulnerable
+        //armorStand.setMarker(false);
+        armorStand.setCustomName(TRAP_NAME);
         armorStand.setCustomNameVisible(false);
-        armorStand.setArms(false);
+        armorStand.setArms(true);
         armorStand.setSmall(true);
 
         ItemStack redDye = new ItemStack(Material.BLUE_DYE);
@@ -162,6 +164,23 @@ public class TrapsListener implements Listener {
         return armorStand;
     }
 
+    /**remove pi
+     * armorStand.setCanPickupItems(false) -> is not working so
+     * to do it I added this method
+     * @param event
+     */
+    @EventHandler
+    public void onEntityPickupItem(EntityPickupItemEvent event) {
+        //System.out.println("A1");
+        if (event.getEntity() instanceof ArmorStand) {
+           //System.out.println("A2");
+            ArmorStand armorStand = (ArmorStand) event.getEntity();
+            if (TRAP_NAME.equals(armorStand.getCustomName())) {
+                //System.out.println("A3");
+                event.setCancelled(true);
+            }
+        }
+    }
 
 
     private ItemStack getItem() {
@@ -179,7 +198,7 @@ public class TrapsListener implements Listener {
                     block.setType(Material.AIR);
                 }
             }
-        }.runTaskLater(plugin, 20L);
+        }.runTaskLater(plugin, 0L);
     }
 
     // Method to retrieve the existing team from the scoreboard
@@ -232,7 +251,7 @@ public class TrapsListener implements Listener {
     }
 
     private void log(String data) {
-        System.out.println(data);
+        //System.out.println(data);
     }
 
 

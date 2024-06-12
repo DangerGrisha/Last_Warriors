@@ -28,7 +28,7 @@ public class TrapMine extends CustomEntity {
     }
 
     public ItemStack createMine(int amount) {
-        log("adding mine to the stack");
+        //log("adding mine to the stack");
         ItemStack mineAsStack = new ItemStack(material, amount);
         ItemMeta meta = mineAsStack.getItemMeta();
         if (meta != null) {
