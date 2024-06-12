@@ -25,7 +25,10 @@ import org.bukkit.scoreboard.Team;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import static greg.pirat1c.humiliation.events.ladynagan.LadyConstants.DELAY_FOR_ULTA;
 import static greg.pirat1c.humiliation.events.ladynagan.LadyConstants.SNIPER_RIFLE_NAME;
+import static greg.pirat1c.humiliation.events.ladynagan.LadyConstants.SNIPER_RIFLE_NAME_MODIFIED;
+import static greg.pirat1c.humiliation.events.ladynagan.LadyConstants.SNIPER_RIFLE_NAME_ULTRA;
 
 public class SniperListener implements Listener {
 
@@ -34,11 +37,14 @@ public class SniperListener implements Listener {
 
     private ItemStack previousItemInMainHand;
     private PotionEffect slowEffect; // Store the slow effect
+    private static String nameOfUltraButton = "Ultra Bullet";
 
     // delay after u get pumpkin for shoot
     private static final long delayAfterPumpkin = 10L;
     private boolean delayAfterPumpkinIsDone = false;
     private static final long delayAfterShoot = 60L;
+    private static boolean isUltaCanceled = false;
+    private static boolean isUlting = false;
     private static final int distanceDetectFromBullet = 10; // distance at which bullet can detect u and rotate direction to u
     private static final double damageOfBullet = 5.0;
     private static final long removeBulletAfter = 60L; //removeBullet after some seconds after shoot 20L - 1s
@@ -60,8 +66,54 @@ public class SniperListener implements Listener {
         if(checkEventForRightClickOnCrossbow(event,player) && isInteracted){
             event.setCancelled(true);
         }
+        /**
+         * creating ultra button event , which making ultra bullet shoot (just more damage and faster)
+         */
+        //check if button clicked ultra
+        if((checkEventForRightClick(event, player, nameOfUltraButton) && !isInteracted) && !isUltaCanceled && !isUlting){
+            // we are making a delay to prevent a bug with fast reuse
+            isInteracted = true;
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    isInteracted = false;
+                }
+            }.runTaskLater(plugin, 2); // 2 ticks = 0.1 seconds
+            if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                if (!wearingPumpkin) {
+                    switchToSniperRifle(player, SNIPER_RIFLE_NAME);
+                    ItemStack pumpkinHelmet = new ItemStack(Material.CARVED_PUMPKIN);
+                    player.getInventory().setHelmet(pumpkinHelmet);
+                    wearingPumpkin = true;
+                    player.getInventory().setItemInMainHand(createT742KMoriCrossbowUltra());
+                    event.setCancelled(true);
+                    isUlting = true;
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            if(!isUltaCanceled) {
+                                //shoot system
+                                Location eyeLocation = player.getEyeLocation();
+                                Vector direction = eyeLocation.getDirection();
+                                armorStand = SummonArmorStand(player, eyeLocation, direction);
+                                shoot(player, armorStand, direction);
+                                ItemStack crossbow = createT742KMoriCrossbowModified();
+                                player.getInventory().setItemInMainHand(crossbow);
+                                isUltaCanceled = true;
+                                delayForUlta(DELAY_FOR_ULTA);
+                                isUlting = false;
+                            }
+
+                        }
+                    }.runTaskLater(plugin, 60L);
+                }
+            }
+        }
+        if(checkEventForRightClickOnCrossbowUltra(event,player) && !isInteracted){
+            event.setCancelled(true);
+        }
         // Check if the event corresponds to right-click with "T-742K Mori" stick or crossbow
-        if ((checkEventForRightClick(event, player) || checkEventForRightClickOnCrossbow(event, player)) && !isInteracted) {
+        if ((checkEventForRightClick(event, player, SNIPER_RIFLE_NAME) || checkEventForRightClickOnCrossbow(event, player)) && !isInteracted) {
             event.setCancelled(true); // Cancel the action to prevent hitting
 
             // we are making a delay to prevent a bug with fast reuse
@@ -89,7 +141,6 @@ public class SniperListener implements Listener {
                         ItemStack crossbow = createT742KMoriCrossbow();
                         player.getInventory().setItemInMainHand(crossbow);
                         setSlowEffect(player,3);
-
                     }
                     wearingPumpkin = true;
                 } else {
@@ -131,7 +182,28 @@ public class SniperListener implements Listener {
 
             }
 
+
         }
+    }
+    private void switchToSniperRifle(Player player, String sniperRifleName) {
+        for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+            ItemStack item = player.getInventory().getItem(slot);
+            if (item != null && item.getType() == Material.STICK && item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta.hasDisplayName() && meta.getDisplayName().equals(sniperRifleName)) {
+                    player.getInventory().setHeldItemSlot(slot);
+                    return;
+                }
+            }
+        }
+    }
+    private void delayForUlta(Long delay){
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                isUltaCanceled = false;
+            }
+        }.runTaskLater(plugin, delay);
     }
     //Shoot System Shoot SystemShoot SystemShoot SystemShoot System Shoot System
     private void shoot(Player player, ArmorStand armorStand, Vector direction) {
@@ -305,7 +377,7 @@ public class SniperListener implements Listener {
         ItemStack crossbow = new ItemStack(Material.CROSSBOW);
         crossbow.setDurability((short)crossbow.getType().getMaxDurability());
         ItemMeta meta = crossbow.getItemMeta();
-        meta.setDisplayName("T-742K Mori");
+        meta.setDisplayName(SNIPER_RIFLE_NAME);
         crossbow.setItemMeta(meta);
         ItemStack arrow = new ItemStack(Material.ARROW);
         CrossbowMeta crossbowMeta = (CrossbowMeta) crossbow.getItemMeta();
@@ -318,7 +390,20 @@ public class SniperListener implements Listener {
         ItemStack crossbow = new ItemStack(Material.CROSSBOW);
         crossbow.setDurability((short)crossbow.getType().getMaxDurability());
         ItemMeta meta = crossbow.getItemMeta();
-        meta.setDisplayName(SNIPER_RIFLE_NAME);
+        meta.setDisplayName(SNIPER_RIFLE_NAME_MODIFIED);
+        crossbow.setItemMeta(meta);
+        ItemStack arrow = new ItemStack(Material.ARROW);
+        CrossbowMeta crossbowMeta = (CrossbowMeta) crossbow.getItemMeta();
+        crossbowMeta.addChargedProjectile(arrow);
+        crossbow.setItemMeta(crossbowMeta);
+
+        return crossbow;
+    }
+    private ItemStack createT742KMoriCrossbowUltra() {
+        ItemStack crossbow = new ItemStack(Material.CROSSBOW);
+        crossbow.setDurability((short)crossbow.getType().getMaxDurability());
+        ItemMeta meta = crossbow.getItemMeta();
+        meta.setDisplayName(SNIPER_RIFLE_NAME_ULTRA);
         crossbow.setItemMeta(meta);
         ItemStack arrow = new ItemStack(Material.ARROW);
         CrossbowMeta crossbowMeta = (CrossbowMeta) crossbow.getItemMeta();
@@ -331,26 +416,35 @@ public class SniperListener implements Listener {
     @EventHandler
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
+        ItemStack newItem = player.getInventory().getItem(event.getNewSlot());
 
-        // Check if the player is wearing a pumpkin and the held item is not the stick
-        if (wearingPumpkin && (player.getInventory().getItem(event.getNewSlot()) == null ||
-                player.getInventory().getItem(event.getNewSlot()).getType() != Material.STICK)) {
+        // Проверяем, носит ли игрок тыкву и у него нет одной из снайперок
+        boolean isNotSniperRifle = newItem == null ||
+                !newItem.hasItemMeta() ||
+                !(newItem.getItemMeta().getDisplayName().equals(SNIPER_RIFLE_NAME) ||
+                        newItem.getItemMeta().getDisplayName().equals(SNIPER_RIFLE_NAME_MODIFIED) ||
+                        newItem.getItemMeta().getDisplayName().equals(SNIPER_RIFLE_NAME_ULTRA));
+
+        if (wearingPumpkin && isNotSniperRifle) {
             removePumpkinAndEffect(player);
+            if (isUlting) {
+                isUltaCanceled = true;
+                isUlting = false;
+            }
         }
     }
     private void removePumpkinAndEffect(Player player) {
-        // Remove the pumpkin from the helmet slot
-        player.getInventory().setHelmet(null);
-
-        // Remove the slow effect
-        player.removePotionEffect(PotionEffectType.SLOW);
-
-        // Replace the crossbow with the previous item
+        if (wearingPumpkin) {
+            player.getInventory().setHelmet(new ItemStack(Material.AIR));
+            wearingPumpkin = false;
+            if (slowEffect != null) {
+                player.removePotionEffect(slowEffect.getType());
+                slowEffect = null;
+            }
+        }
+        switchToSniperRifle(player,SNIPER_RIFLE_NAME_MODIFIED);
         player.getInventory().setItemInMainHand(previousItemInMainHand);
-
-        wearingPumpkin = false;
     }
-
 
 
     @EventHandler
@@ -372,18 +466,26 @@ public class SniperListener implements Listener {
         player.addPotionEffect(slowEffect);
     }
 
-    private boolean checkEventForRightClick(PlayerInteractEvent event, Player player) {
+    private boolean checkEventForRightClick(PlayerInteractEvent event, Player player, String nameOfItem) {
         return ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
                 player.getInventory().getItemInMainHand().getType() == Material.STICK &&
                 player.getInventory().getItemInMainHand().hasItemMeta() &&
                 player.getInventory().getItemInMainHand().getItemMeta().hasDisplayName() &&
-                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("T-742K Mori"));
+                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(nameOfItem));
     }
     private boolean checkEventForRightClickOnCrossbow(PlayerInteractEvent event, Player player) {
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
         if (itemInMainHand != null && itemInMainHand.getType() == Material.CROSSBOW && itemInMainHand.hasItemMeta()) {
             ItemMeta meta = itemInMainHand.getItemMeta();
-            return meta.hasDisplayName() && (meta.getDisplayName().equals("T-742K Mori") || meta.getDisplayName().equals("T-742K Mori+"));
+            return meta.hasDisplayName() && (meta.getDisplayName().equals(SNIPER_RIFLE_NAME) || meta.getDisplayName().equals(SNIPER_RIFLE_NAME_MODIFIED));
+        }
+        return false;
+    }
+    private boolean checkEventForRightClickOnCrossbowUltra(PlayerInteractEvent event, Player player) {
+        ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
+        if (itemInMainHand != null && itemInMainHand.getType() == Material.CROSSBOW && itemInMainHand.hasItemMeta()) {
+            ItemMeta meta = itemInMainHand.getItemMeta();
+            return meta.hasDisplayName() && meta.getDisplayName().equals(SNIPER_RIFLE_NAME_ULTRA);
         }
         return false;
     }
