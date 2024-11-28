@@ -47,4 +47,6 @@ commands:
     description: lady nagan's explode perk
   trapGive:
     description: lady nagan's trap
+  ultraGiveLady:
+    description: ulta lady nagan give
 

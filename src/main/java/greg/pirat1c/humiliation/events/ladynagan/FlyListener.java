@@ -1,5 +1,8 @@
 package greg.pirat1c.humiliation.events.ladynagan;
 
+import greg.pirat1c.humiliation.command.ladynagan.ExplosionGive;
+import greg.pirat1c.humiliation.command.ladynagan.FlyGive;
+import greg.pirat1c.humiliation.command.ladynagan.UltraGive;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -19,13 +22,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static greg.pirat1c.humiliation.events.ladynagan.LadyConstants.*;
+
 public class FlyListener implements Listener {
-    private final JavaPlugin plugin;
-    private int flyCounter = 7; // Counter to track the number of times Fly+ is used
+    private int flyCounter = FLY_COUNTER; // Counter to track the number of times Fly+ is used
     private final Map<Location, Material> previousBlocks = new HashMap<>(); // Map to store previous block locations
 
-    public FlyListener(JavaPlugin plugin) {
+    private JavaPlugin plugin = null;
+    private CooldownManager cooldownManager = null;
+
+    public FlyListener(JavaPlugin plugin, CooldownManager cooldownManager) {
         this.plugin = plugin;
+        this.cooldownManager = cooldownManager;
     }
 
     private boolean isInteracted = false;
@@ -41,7 +49,7 @@ public class FlyListener implements Listener {
             isInteracted = true;
             player.getInventory().setItemInMainHand(flyPlusFeather);
             // Reset the fly counter when using Start Fly
-            flyCounter = 7;
+            flyCounter = FLY_COUNTER;
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -53,10 +61,10 @@ public class FlyListener implements Listener {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    player.getInventory().setItemInMainHand(createFlyFeather());
-                    flyCounter = 0;
+                    deletePreviousBlocks();
+                    delayForUlta(player, "FlyLadyNagan", 5, COOLDOWN_FLY);
                 }
-            }.runTaskLater(plugin, 400);
+            }.runTaskLater(plugin, FLY_TIME);
 
         } else if (checkEventForRightClickForFly(event, player) && flyCounter >= 0 && !isInteracted) {
             // Decrement the fly counter
@@ -75,11 +83,27 @@ public class FlyListener implements Listener {
                 }
             }.runTaskLater(plugin, 2); // 2 ticks = 0.1 seconds
             if (flyCounter == 0) {
-                ItemStack flyPlusFeather = createFlyFeather();
-                player.getInventory().setItemInMainHand(flyPlusFeather);
+                // this will interrupt the top timer as it will notice that this cooldown already exis only if FLY_TIME < COOLDOWN_TIME
+                //here should be delete last blocks
+                delayForUlta(player, "FlyLadyNagan", 5, COOLDOWN_FLY);
             }
 
         }
+    }
+    private void delayForUlta(Player player, String nameOfAbilitySpecific, int inventorySlot, int delayInSeconds) {
+
+        cooldownManager.startCooldown(player, nameOfAbilitySpecific, inventorySlot, delayInSeconds, true);
+        // Schedule the dye change back to red after 20 seconds
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Check if the player still has the yellow dye
+                if (cooldownManager.isCooldownComplete(player, nameOfAbilitySpecific)) {
+                    player.getInventory().setItem(inventorySlot, FlyGive.getItem());
+                    flyCounter = 0;
+                }
+            }
+        }.runTaskLater(plugin, delayInSeconds * 20L); // 20 ticks per second, so 20 seconds is 20 * 20 ticks
     }
 
     private ItemStack createFlyPlusFeather() {
@@ -89,6 +113,7 @@ public class FlyListener implements Listener {
         feather.setItemMeta(meta);
         return feather;
     }
+
 
     private ItemStack createFlyFeather() {
         ItemStack feather = new ItemStack(Material.FEATHER);

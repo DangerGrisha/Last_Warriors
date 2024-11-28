@@ -1,7 +1,11 @@
 package greg.pirat1c.humiliation.events.ladynagan;
 
+import greg.pirat1c.humiliation.command.ladynagan.ExplosionGive;
+import greg.pirat1c.humiliation.command.ladynagan.UltraGive;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,43 +18,66 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import static greg.pirat1c.humiliation.events.ladynagan.LadyConstants.*;
+
 /**
  * ExplosionListener responsible for lady's explosion ability
  * player can set up herself to explode on ability activation
  * ability has cooldown
  */
 public class ExplosionListener implements Listener {
-    private final JavaPlugin plugin;
     private final String tagCheck = LadyConstants.LADY_TAG;
     private final String dyeName = "Self-Destruction";
-    private final Long delayPerk = 400L;
 
-    public ExplosionListener(JavaPlugin plugin) {
+    private final JavaPlugin plugin;
+    private CooldownManager cooldownManager = null;
+
+    public ExplosionListener(JavaPlugin plugin, CooldownManager cooldownManager) {
         this.plugin = plugin;
+        this.cooldownManager = cooldownManager;
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+
         // Check if the player has the green dye named "Self-Destruction" in their inventory
         if (hasSelfDestructionItem(player)) {
-            player.getWorld().createExplosion(player.getLocation(), 4.0f, true, true);
+            // Create an explosion with visual and sound effects
+            player.getWorld().createExplosion(player.getLocation(), 0, false, DAMAGE_TERRAIN_SE);
+
+            // Apply manual damage to all entities in the explosion radius
+            for (Entity entity : player.getNearbyEntities(EXPLOSION_RADIUS_SE, EXPLOSION_RADIUS_SE, EXPLOSION_RADIUS_SE)) {
+                if (entity instanceof LivingEntity) {
+                    LivingEntity target = (LivingEntity) entity;
+
+                    // Do not damage the player who triggered the explosion (already dead)
+                    if (!target.equals(player)) {
+                        target.damage(DAMAGE_AMOUNT_SE, player); // Damage the entity
+                    }
+                }
+            }
 
             // Replace the green dye with a yellow dye in the player's inventory
             replaceGreenDyeWithYellow(player);
-
-            // Schedule the dye change back to red after 20 seconds
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    // Check if the player still has the yellow dye
-                    if (player.getInventory().contains(Material.YELLOW_DYE)) {
-                        replaceYellowDyeWithRed(player);
-                    }
-                }
-            }.runTaskLater(plugin, delayPerk); // 20 ticks per second, so 20 seconds is 20 * 20 ticks
+            delayForUlta(player,"ExplosionLadyNagan", 7, DELAY_PERK_SE);
         }
     }
+    private void delayForUlta(Player player, String nameOfAbilitySpecific, int inventorySlot, int delayInSeconds) {
+
+        cooldownManager.startCooldown(player, nameOfAbilitySpecific, inventorySlot, delayInSeconds, true);
+        // Schedule the dye change back to red after 20 seconds
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Check if the player still has the yellow dye
+                if (cooldownManager.isCooldownComplete(player, nameOfAbilitySpecific)) {
+                    player.getInventory().setItem(inventorySlot, ExplosionGive.getItem());
+                }
+            }
+        }.runTaskLater(plugin, delayInSeconds * 20L); // 20 ticks per second, so 20 seconds is 20 * 20 ticks
+    }
+
 
     /**
      * Setting ability to explode yourself to cooldown

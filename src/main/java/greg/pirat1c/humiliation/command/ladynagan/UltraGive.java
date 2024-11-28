@@ -1,4 +1,4 @@
-package greg.pirat1c.humiliation.command;
+package greg.pirat1c.humiliation.command.ladynagan;
 
 
 import org.bukkit.Material;
@@ -12,14 +12,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SaskeSword implements CommandExecutor {
-    private static final Material material = Material.DIAMOND_SWORD;
+import static greg.pirat1c.humiliation.events.ladynagan.LadyConstants.NAME_OF_ULTRA_BUTTON;
+
+public class UltraGive implements CommandExecutor {
+    private static final Material material = Material.STICK;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
+
         Player player = (Player) sender;
 
-        player.getInventory().setItem(2,getDirt());
+        player.getInventory().addItem(getItem());
         ItemStack itemInSecondSlot = player.getInventory().getItem(2);
         if (itemInSecondSlot != null) {
             System.out.println("item found");
@@ -31,21 +34,21 @@ public class SaskeSword implements CommandExecutor {
         return true;
     }
 
-    private ItemStack getDirt() {
-
-        ItemStack sword = new ItemStack(material, 1);
-        ItemMeta meta = sword.getItemMeta();
+    public static ItemStack getItem() {
+        ItemStack item = new ItemStack(material, 1);
+        ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("Katana");
+            meta.setDisplayName(NAME_OF_ULTRA_BUTTON);
             meta.setUnbreakable(true);
+
             List<String> lore = new ArrayList<>();
 
             lore.add("something");
 
             meta.setLore(lore);
-            sword.setItemMeta(meta);
+            item.setItemMeta(meta);
         }
-        return sword;
+        return item;
     }
 
 }

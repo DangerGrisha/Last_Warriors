@@ -49,7 +49,7 @@ public class SwordSaskeListener implements Listener {
     private boolean isSwordEvent(PlayerInteractEvent event, Player player) {
         return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
                 && player.getInventory().getItemInMainHand().getType() == Material.DIAMOND_SWORD
-                && player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("katana saske");
+                && player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Katana");
     }
 
     private void pushPlayerBack(Player player) {
