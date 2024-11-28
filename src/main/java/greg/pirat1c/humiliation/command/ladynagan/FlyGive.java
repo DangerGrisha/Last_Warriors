@@ -33,7 +33,7 @@ public class FlyGive implements CommandExecutor {
         return true;
     }
 
-    private ItemStack getItem() {
+    public static ItemStack getItem() {
         ItemStack sword = new ItemStack(material, 1);
         ItemMeta meta = sword.getItemMeta();
         if (meta != null) {

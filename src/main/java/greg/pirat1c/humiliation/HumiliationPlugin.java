@@ -12,17 +12,11 @@ import greg.pirat1c.humiliation.command.SnowShuriken;
 import greg.pirat1c.humiliation.command.SpawnCommand;
 import greg.pirat1c.humiliation.command.SpawnHome;
 import greg.pirat1c.humiliation.command.TestSpawnCommand;
-import greg.pirat1c.humiliation.command.ladynagan.ExplosionGive;
-import greg.pirat1c.humiliation.command.ladynagan.FlyGive;
-import greg.pirat1c.humiliation.command.ladynagan.SniperGive;
-import greg.pirat1c.humiliation.command.ladynagan.TrapGive;
+import greg.pirat1c.humiliation.command.ladynagan.*;
 import greg.pirat1c.humiliation.entity.HomeInfo;
 import greg.pirat1c.humiliation.events.FloorIce;
-import greg.pirat1c.humiliation.events.ladynagan.ExplosionListener;
-import greg.pirat1c.humiliation.events.ladynagan.FlyListener;
-import greg.pirat1c.humiliation.events.ladynagan.SniperListener;
+import greg.pirat1c.humiliation.events.ladynagan.*;
 
-import greg.pirat1c.humiliation.events.ladynagan.TrapsListener;
 import greg.pirat1c.humiliation.events.saske.AttractionListener;
 import greg.pirat1c.humiliation.events.saske.BodyReplacemenListener;
 import greg.pirat1c.humiliation.events.saske.ChidoryListener;
@@ -41,9 +35,12 @@ import java.util.UUID;
 public final class HumiliationPlugin extends JavaPlugin {
     public static final String SPAWN_ENTITY_COMMAND_NAME = "spawnEntity";
     public static final String HUMILIATION_COMMAND_NAME = "humiliateMe";
+    public CooldownManager cooldownManager = null;
 
     @Override
     public void onEnable() {
+        cooldownManager = new CooldownManager(this);
+
         Map<UUID, HomeInfo> playerIdToHomeMap = new HashMap<>();
         HomeInfo homeInfo = new HomeInfo();
 
@@ -63,6 +60,7 @@ public final class HumiliationPlugin extends JavaPlugin {
         getCommand("flyGive").setExecutor(new FlyGive());
         getCommand("explosionGive").setExecutor(new ExplosionGive());
         getCommand("trapGive").setExecutor(new TrapGive());
+        getCommand("ultraGiveLady").setExecutor(new UltraGive());
 
         // Bukkit.getPluginManager().registerEvents(new Events(), this);
         Bukkit.getPluginManager().registerEvents(new FloorIce(this), this);
@@ -74,10 +72,14 @@ public final class HumiliationPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SpeedAfterKillListener(this), this);
         Bukkit.getPluginManager().registerEvents(new AttractionListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ChidoryListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new SniperListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new FlyListener(this),this);
-        Bukkit.getPluginManager().registerEvents(new ExplosionListener(this),this);
-        Bukkit.getPluginManager().registerEvents(new TrapsListener(this),this);
+        Bukkit.getPluginManager().registerEvents(new SniperListener(this, cooldownManager), this);
+        Bukkit.getPluginManager().registerEvents(new FlyListener(this,cooldownManager),this);
+        Bukkit.getPluginManager().registerEvents(new ExplosionListener(this, cooldownManager),this);
+        Bukkit.getPluginManager().registerEvents(new TrapsListener(this, cooldownManager),this);
+
+        Bukkit.getPluginManager().registerEvents(new GlassPanelPlaceListener(this),this);
+        //Bukkit.getPluginManager().registerEvents(new StaticInventoryListener(this),this);
+
         //Bukkit.getPluginManager().registerEvents(new SwordTest(this), this);
         //PluginManager pluginManager = Bukkit.getPluginManager();
         //Bukkit.getPluginManager().registerEvents(new SlimeSoccerListener(this), this);

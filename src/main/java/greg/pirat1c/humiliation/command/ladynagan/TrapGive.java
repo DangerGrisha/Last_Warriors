@@ -11,11 +11,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static greg.pirat1c.humiliation.events.ladynagan.LadyConstants.SET_UP_BLOCK;
 
 public class TrapGive implements CommandExecutor {
     private static final String displayName = "Trap";
-
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
@@ -34,8 +36,24 @@ public class TrapGive implements CommandExecutor {
         return true;
     }
 
-    private ItemStack getItem() {
-        return TrapMine.createMineObject().createMine(1);
+    public static ItemStack getItem() {
+        return getItem(1);
+    }
+    public static ItemStack getItem(int amount) {
+        ItemStack sword = new ItemStack(SET_UP_BLOCK, 1);
+        ItemMeta meta = sword.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(displayName);
+            meta.setUnbreakable(true);
+
+            List<String> lore = new ArrayList<>();
+
+            lore.add("something");
+
+            meta.setLore(lore);
+            sword.setItemMeta(meta);
+        }
+        return sword;
     }
 
 }

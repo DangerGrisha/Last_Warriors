@@ -33,9 +33,9 @@ public class SniperGive implements CommandExecutor {
         return true;
     }
 
-    private ItemStack getItem() {
-        ItemStack sword = new ItemStack(material, 1);
-        ItemMeta meta = sword.getItemMeta();
+    public static ItemStack getItem() {
+        ItemStack item = new ItemStack(material, 1);
+        ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(displayName);
             meta.setUnbreakable(true);
@@ -45,9 +45,9 @@ public class SniperGive implements CommandExecutor {
             lore.add("something");
 
             meta.setLore(lore);
-            sword.setItemMeta(meta);
+            item.setItemMeta(meta);
         }
-        return sword;
+        return item;
     }
 
 }
