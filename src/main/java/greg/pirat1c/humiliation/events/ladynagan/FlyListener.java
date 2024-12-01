@@ -62,7 +62,7 @@ public class FlyListener implements Listener {
                 @Override
                 public void run() {
                     deletePreviousBlocks();
-                    delayForUlta(player, "FlyLadyNagan", 5, COOLDOWN_FLY);
+                    delayForUlta(player, "FlyLadyNagan", FLY_SLOT, COOLDOWN_FLY);
                 }
             }.runTaskLater(plugin, FLY_TIME);
 
@@ -85,7 +85,7 @@ public class FlyListener implements Listener {
             if (flyCounter == 0) {
                 // this will interrupt the top timer as it will notice that this cooldown already exis only if FLY_TIME < COOLDOWN_TIME
                 //here should be delete last blocks
-                delayForUlta(player, "FlyLadyNagan", 5, COOLDOWN_FLY);
+                delayForUlta(player, "FlyLadyNagan", FLY_SLOT, COOLDOWN_FLY);
             }
 
         }

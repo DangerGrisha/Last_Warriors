@@ -13,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class StaticInventoryListener implements Listener {
     // Define the static slots
-    private static final int[] STATIC_SLOTS = {0, 8}; // Example: Slot 0 and Slot 8
+    private static final int[] STATIC_SLOTS = {0, 5, 6, 7, 8}; // Example: Slot 0 and Slot 8
     public final JavaPlugin plugin;
 
     public StaticInventoryListener(JavaPlugin plugin) {

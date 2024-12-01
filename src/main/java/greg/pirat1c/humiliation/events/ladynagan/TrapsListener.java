@@ -42,8 +42,7 @@ public class TrapsListener implements Listener {
     private final Map<ArmorStand, BukkitRunnable> armorStandTimers = new HashMap<>();
     private final Map<Player, List<Long>> mineCooldowns = new HashMap<>();
     private final int MAX_MINES = 3; // Maximum number of mines a player can place
-    private final int COOLDOWN_SECONDS = 15; // Cooldown for each mine in seconds
-    private final int COOLDOWN_SLOT = SLOT_OF_TRAPS; // Slot to show cooldown (when mines are depleted)
+    private final int COOLDOWN_SECONDS = 15; // Cooldown for each mine in seconds/
     private final int TIMER_SECONDS = 20; // 3 minutes timer
     private final Map<ArmorStand, Player> armorStandOwners = new HashMap<>();
 
@@ -139,12 +138,12 @@ public class TrapsListener implements Listener {
                             armorStandOwners.put(armorStand, player);
                             // Increment active mines and start timer
                             activeBombCounts.put(player, currentBombCount + 1);
-                            startArmorStandTimer(armorStand, player, bombId, COOLDOWN_SLOT);
+                            startArmorStandTimer(armorStand, player, bombId, TRAPS_SLOT);
 
                             // Check if the 6th slot is empty and set it to a gray stained glass pane if it is
-                            if (player.getInventory().getItem(COOLDOWN_SLOT) == null ||
-                                    player.getInventory().getItem(COOLDOWN_SLOT).getType() == Material.AIR) {
-                                player.getInventory().setItem(COOLDOWN_SLOT, createGrayGlassPane());
+                            if (player.getInventory().getItem(TRAPS_SLOT) == null ||
+                                    player.getInventory().getItem(TRAPS_SLOT).getType() == Material.AIR) {
+                                player.getInventory().setItem(TRAPS_SLOT, createGrayGlassPane());
                             }
                         }
                     }.runTaskLater(plugin, 0);
@@ -256,7 +255,7 @@ public class TrapsListener implements Listener {
                     } else {
                         // If the damager is an enemy, return the bomb to the original owner and start cooldown
                         String bombId = originalOwner.getUniqueId() + "-damagedMine"; // Unique identifier
-                        coolDown(originalOwner, bombId, COOLDOWN_SLOT, COOLDOWN_SECONDS);
+                        coolDown(originalOwner, bombId, TRAPS_SLOT, COOLDOWN_SECONDS);
 
                     }
                 } else {
@@ -330,7 +329,7 @@ public class TrapsListener implements Listener {
             }
             armorStandTimers.remove(armorStand);
             activeBombCounts.put(player, activeBombCounts.getOrDefault(player, 0) - 1);
-            coolDown(player, bombId, COOLDOWN_SLOT, COOLDOWN_SECONDS);
+            coolDown(player, bombId, TRAPS_SLOT, COOLDOWN_SECONDS);
         }
 
         armorStand.remove();
