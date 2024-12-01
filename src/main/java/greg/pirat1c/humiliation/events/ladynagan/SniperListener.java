@@ -120,7 +120,6 @@ public class SniperListener extends SniperGive implements Listener {
     public ArmorStand armorStand = null;
     public Location armorLocation = null;
     private Location nextLocation;
-    private int sniperRifleSlot = 0;
 
     private JavaPlugin plugin = null;
     private CooldownManager cooldownManager = null;
@@ -180,7 +179,6 @@ public class SniperListener extends SniperGive implements Listener {
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
         ItemStack newItem = player.getInventory().getItem(event.getNewSlot());
-
         // Проверяем, носит ли игрок тыкву и у него нет одной из снайперок
         boolean isNotSniperRifle = newItem == null ||
                 !newItem.hasItemMeta() ||
@@ -194,7 +192,7 @@ public class SniperListener extends SniperGive implements Listener {
                 isUltaCanceled = true;
                 isUlting = false;
             }
-            ItemStack sniperRifle = player.getInventory().getItem(sniperRifleSlot);
+            ItemStack sniperRifle = player.getInventory().getItem(RIFLE_SLOT);
             returnSniperToOriginalSlot(player,sniperRifle);
             if(isUlting && !isUltaCanceled){
                 isUltaCanceled = true;
@@ -202,8 +200,8 @@ public class SniperListener extends SniperGive implements Listener {
         }
     }
     private void returnSniperToOriginalSlot(Player player, ItemStack sniperRifle) {
-        if (sniperRifleSlot >= 0 && sniperRifleSlot <= 8) { // Ensure the slot is within hotbar range
-            player.getInventory().setItem(sniperRifleSlot, SniperGive.getItem());
+        if (RIFLE_SLOT >= 0 && RIFLE_SLOT <= 8) { // Ensure the slot is within hotbar range
+            player.getInventory().setItem(RIFLE_SLOT, SniperGive.getItem());
         } else {
             player.getInventory().addItem(SniperGive.getItem()); // Fallback if slot is invalid
         }
@@ -344,7 +342,7 @@ public class SniperListener extends SniperGive implements Listener {
 
 
     //Shoot System Shoot SystemShoot SystemShoot SystemShoot System Shoot System
-    private void shoot(Player player, ArmorStand armorStand, Vector direction, boolean isUlting) {
+    private void shoot(Player player, ArmorStand armorStand, Vector direction, boolean isUlting, PlayerInteractEvent event) {
 
         final boolean[] directionChanged = {false}; // Declare an array with one element to make it effectively final
 
@@ -402,6 +400,13 @@ public class SniperListener extends SniperGive implements Listener {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             directionChanged[0] = true; // Reset the direction changed flag after a delay
             // Cancel the movement task
+
+            //Give first sniper arbalet if bullet is donne and if
+            ItemStack newItem = player.getInventory().getItem(RIFLE_SLOT);
+            if(newItem.getItemMeta().getDisplayName().equals(SNIPER_RIFLE_NAME_MODIFIED)){
+                player.getInventory().setItemInMainHand(createT742KMoriCrossbow());
+            }
+
             Bukkit.getScheduler().cancelTask(finalArmorStandTaskId);
         }, REMOVE_BULLET_AFTER); // 3 seconds (20 ticks per second)
 
@@ -701,7 +706,7 @@ public class SniperListener extends SniperGive implements Listener {
             Location eyeLocation = player.getEyeLocation();
             Vector direction = eyeLocation.getDirection();
             armorStand = SummonArmorStand(player, eyeLocation, direction);
-            shoot(player, armorStand, direction, isUlting);
+            shoot(player, armorStand, direction, isUlting, event);
             ItemStack crossbow = createT742KMoriCrossbowModified();
             player.getInventory().setItemInMainHand(crossbow);
         }
@@ -740,7 +745,7 @@ public class SniperListener extends SniperGive implements Listener {
             isUlting = true;
             System.out.println(" - is ulting ? = " + isUltaCanceled);
             System.out.println(" -hand  ? = " + player.getInventory().getItemInMainHand());
-            delayForUlta(player,"UltaBulletLadyNagan",8,DELAY_AFTER_ULTA);
+            delayForUlta(player,"UltaBulletLadyNagan",ULT_SLOT,DELAY_AFTER_ULTA);
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -749,7 +754,7 @@ public class SniperListener extends SniperGive implements Listener {
                         Location eyeLocation = player.getEyeLocation();
                         Vector direction = eyeLocation.getDirection();
                         armorStand = SummonArmorStand(player, eyeLocation, direction);
-                        shoot(player, armorStand, direction, isUlting);
+                        shoot(player, armorStand, direction, isUlting, event);
                         ItemStack crossbow = createT742KMoriCrossbowModified();
                         player.getInventory().setItemInMainHand(crossbow);
                         isUltaCanceled = true;

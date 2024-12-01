@@ -60,7 +60,7 @@ public class ExplosionListener implements Listener {
 
             // Replace the green dye with a yellow dye in the player's inventory
             replaceGreenDyeWithYellow(player);
-            delayForUlta(player,"ExplosionLadyNagan", 7, DELAY_PERK_SE);
+            delayForUlta(player,"ExplosionLadyNagan", EXPLOSION_SLOT, DELAY_PERK_SE);
         }
     }
     private void delayForUlta(Player player, String nameOfAbilitySpecific, int inventorySlot, int delayInSeconds) {

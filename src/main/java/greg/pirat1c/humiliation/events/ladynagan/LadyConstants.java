@@ -40,4 +40,12 @@ public interface LadyConstants {
     boolean DAMAGE_TERRAIN_SE = true; // Set to true if you want terrain damage
     int DELAY_PERK_SE = 20; //Seconds
 
+    //Static Slots 0-8
+
+    int RIFLE_SLOT = 0;
+    int FLY_SLOT = 5;
+    int TRAPS_SLOT = 6;
+    int EXPLOSION_SLOT = 7;
+    int ULT_SLOT = 8;
+
 }
