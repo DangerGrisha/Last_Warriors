@@ -66,7 +66,7 @@ public final class HumiliationPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new FloorIce(this), this);
         Bukkit.getPluginManager().registerEvents(new SwordSaskeListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ShurikenListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new ThrowListener(this), this);
+        //Bukkit.getPluginManager().registerEvents(new ThrowListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BodyReplacemenListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ResistanceAfterKillListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SpeedAfterKillListener(this), this);

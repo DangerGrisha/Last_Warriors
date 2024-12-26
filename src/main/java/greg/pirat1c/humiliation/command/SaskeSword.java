@@ -12,8 +12,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.KATANA_MATERIAL;
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.KATANA_NAME;
+
 public class SaskeSword implements CommandExecutor {
-    private static final Material material = Material.DIAMOND_SWORD;
+    private static final Material material = KATANA_MATERIAL;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
@@ -36,7 +39,7 @@ public class SaskeSword implements CommandExecutor {
         ItemStack sword = new ItemStack(material, 1);
         ItemMeta meta = sword.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("Katana");
+            meta.setDisplayName(KATANA_NAME);
             meta.setUnbreakable(true);
             List<String> lore = new ArrayList<>();
 

@@ -16,6 +16,9 @@ import org.bukkit.util.RayTraceResult;
 
 import java.util.Collection;
 
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.KATANA_MATERIAL;
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.KATANA_NAME;
+
 public class SwordSaskeListener implements Listener {
 
     private JavaPlugin plugin;
@@ -48,8 +51,8 @@ public class SwordSaskeListener implements Listener {
 
     private boolean isSwordEvent(PlayerInteractEvent event, Player player) {
         return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-                && player.getInventory().getItemInMainHand().getType() == Material.DIAMOND_SWORD
-                && player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Katana");
+                && player.getInventory().getItemInMainHand().getType() == KATANA_MATERIAL
+                && player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(KATANA_NAME);
     }
 
     private void pushPlayerBack(Player player) {
