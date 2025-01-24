@@ -49,4 +49,11 @@ commands:
     description: lady nagan's trap
   ultraGiveLady:
     description: ulta lady nagan give
-
+  waterShieldGive:
+    description: quick wall for Ishigava
+  waterBridgesGive:
+    description: bridges for Ishigava
+  lastBridgesGive:
+    description: last WALL for Ishigava
+  auraGive:
+    description: aura ult for Ishigava

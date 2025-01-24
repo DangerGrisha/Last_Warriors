@@ -4,6 +4,10 @@ import greg.pirat1c.humiliation.command.AttractionGive;
 import greg.pirat1c.humiliation.command.ChidoryGive;
 import greg.pirat1c.humiliation.command.HomeCommand;
 import greg.pirat1c.humiliation.command.HumiliationCommand;
+import greg.pirat1c.humiliation.command.Ishigava.AuraGive;
+import greg.pirat1c.humiliation.command.Ishigava.LastWaterWallGive;
+import greg.pirat1c.humiliation.command.Ishigava.WaterBridgesGive;
+import greg.pirat1c.humiliation.command.Ishigava.WaterShieldGive;
 import greg.pirat1c.humiliation.command.KitSlaveCommand;
 import greg.pirat1c.humiliation.command.SaskeBodyReplacement;
 import greg.pirat1c.humiliation.command.SaskeSword;
@@ -15,6 +19,7 @@ import greg.pirat1c.humiliation.command.TestSpawnCommand;
 import greg.pirat1c.humiliation.command.ladynagan.*;
 import greg.pirat1c.humiliation.entity.HomeInfo;
 import greg.pirat1c.humiliation.events.FloorIce;
+import greg.pirat1c.humiliation.events.ishigava.*;
 import greg.pirat1c.humiliation.events.ladynagan.*;
 
 import greg.pirat1c.humiliation.events.saske.AttractionListener;
@@ -25,6 +30,9 @@ import greg.pirat1c.humiliation.events.saske.ShurikenListener;
 import greg.pirat1c.humiliation.events.saske.SpeedAfterKillListener;
 import greg.pirat1c.humiliation.events.saske.SwordSaskeListener;
 import greg.pirat1c.humiliation.events.saske.ThrowListener;
+import greg.pirat1c.humiliation.events.soccer.ExperienceMinerListener;
+import greg.pirat1c.humiliation.events.soccer.KickSoccerBallListener;
+import greg.pirat1c.humiliation.events.soccer.SlimeSoccerListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -61,12 +69,17 @@ public final class HumiliationPlugin extends JavaPlugin {
         getCommand("explosionGive").setExecutor(new ExplosionGive());
         getCommand("trapGive").setExecutor(new TrapGive());
         getCommand("ultraGiveLady").setExecutor(new UltraGive());
+        getCommand("waterShieldGive").setExecutor(new WaterShieldGive());
+        getCommand("waterBridgesGive").setExecutor(new WaterBridgesGive());
+        getCommand("lastBridgesGive").setExecutor(new LastWaterWallGive());
+        getCommand("auraGive").setExecutor(new AuraGive());
+
 
         // Bukkit.getPluginManager().registerEvents(new Events(), this);
         Bukkit.getPluginManager().registerEvents(new FloorIce(this), this);
         Bukkit.getPluginManager().registerEvents(new SwordSaskeListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ShurikenListener(this), this);
-        //Bukkit.getPluginManager().registerEvents(new ThrowListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new ThrowListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BodyReplacemenListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ResistanceAfterKillListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SpeedAfterKillListener(this), this);
@@ -76,6 +89,13 @@ public final class HumiliationPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new FlyListener(this,cooldownManager),this);
         Bukkit.getPluginManager().registerEvents(new ExplosionListener(this, cooldownManager),this);
         Bukkit.getPluginManager().registerEvents(new TrapsListener(this, cooldownManager),this);
+
+        Bukkit.getPluginManager().registerEvents(new WaterShieldListener(this),this);
+        Bukkit.getPluginManager().registerEvents(new WaterBridgesListener(this),this);
+        Bukkit.getPluginManager().registerEvents(new BridgeControlListener(this),this);
+        Bukkit.getPluginManager().registerEvents(new LastWaterWallListener(this),this);
+        Bukkit.getPluginManager().registerEvents(new AuraListener(this),this);
+
 
         Bukkit.getPluginManager().registerEvents(new GlassPanelPlaceListener(this),this);
         //Bukkit.getPluginManager().registerEvents(new StaticInventoryListener(this),this);

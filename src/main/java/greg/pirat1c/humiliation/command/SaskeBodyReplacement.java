@@ -12,6 +12,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.NAME_OF_REPLACEMENT;
+
 public class SaskeBodyReplacement implements CommandExecutor {
 
     private static final Material material = Material.INK_SAC;
@@ -40,7 +42,7 @@ public class SaskeBodyReplacement implements CommandExecutor {
         ItemStack sword = new ItemStack(material, 1);
         ItemMeta meta = sword.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("Body Replacement");
+            meta.setDisplayName(NAME_OF_REPLACEMENT);
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();

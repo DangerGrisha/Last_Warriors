@@ -18,6 +18,8 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.*;
+
 public class ChidoryListener implements Listener {
 
     private JavaPlugin plugin;
@@ -51,13 +53,13 @@ public class ChidoryListener implements Listener {
                     Vector direction = player.getLocation().getDirection();
                     world.spawnParticle(Particle.valueOf("SONIC_BOOM"), player.getLocation(), 7, 0.5, 0.5, 0.5, 0);
                     // Multiply the direction by a factor to set the velocity. This propels the player in the look direction.
-                    Vector dashVelocity = direction.multiply(4);
+                    Vector dashVelocity = direction.multiply(MULTIPLY_VELOCITY);
                     player.setVelocity(dashVelocity);
 
                     // Apply damage to entities in the dash path.
                     applyDamageInPlayer(player, player.getLocation(), dashVelocity);
                 }
-            }.runTaskLater(plugin, 33L);
+            }.runTaskLater(plugin, SPEACH_BEFORE_DASH);
         }
     }
 
@@ -126,6 +128,6 @@ public class ChidoryListener implements Listener {
         return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
                 player.getInventory().getItemInMainHand().getType() == Material.INK_SAC &&
                 player.getInventory().getItemInMainHand().getItemMeta().hasDisplayName() &&
-                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Chidory");
+                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(NAME_OF_CHIDORY);
     }
 }

@@ -17,8 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import static greg.pirat1c.humiliation.events.saske.SaskeConstants.DISTANCE_OF_TRIGGERING;
-import static greg.pirat1c.humiliation.events.saske.SaskeConstants.NAME_OF_BUTTON;
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.*;
 
 public class BodyReplacemenListener implements Listener {
 
@@ -33,7 +32,7 @@ public class BodyReplacemenListener implements Listener {
         if (checkEvent(event)) {
             Player player = event.getPlayer();
             ItemStack item = player.getInventory().getItemInMainHand();
-            Bukkit.getScheduler().runTaskLater(plugin, () -> useAbility(player), 20L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> useAbility(player), SPEACH_BEFORE_REPLACEMENT);
 
         }
     }
@@ -41,7 +40,7 @@ public class BodyReplacemenListener implements Listener {
     private boolean checkEvent(PlayerInteractEvent event) {
         return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
                 event.getPlayer().getInventory().getItemInMainHand().getType() == Material.INK_SAC &&
-                event.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(NAME_OF_BUTTON);
+                event.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(NAME_OF_REPLACEMENT);
     }
 
     private void useAbility(Player player) {

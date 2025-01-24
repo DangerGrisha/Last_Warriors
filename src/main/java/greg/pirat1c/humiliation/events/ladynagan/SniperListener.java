@@ -534,6 +534,10 @@ public class SniperListener extends SniperGive implements Listener {
         bulletMeta.setDisplayName("Bullet");
         bullet.setItemMeta(bulletMeta);
         armorStand.getEquipment().setItemInMainHand(bullet);
+
+        // Add the tag "bullet" to the ArmorStand
+        armorStand.addScoreboardTag("bullet");
+
         return armorStand;
     }
 

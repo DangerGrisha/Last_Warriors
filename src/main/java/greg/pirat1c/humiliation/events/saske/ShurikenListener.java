@@ -11,12 +11,12 @@ import org.bukkit.scoreboard.Team;
 
 import java.sql.SQLOutput;
 
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.SHURICKEN_DAMAGE;
 import static org.bukkit.Bukkit.getName;
 import static org.bukkit.Bukkit.getPlayer;
 
 public class ShurikenListener implements Listener {
 
-    private static final Integer ADDED_DAMAGE = 3;
     private JavaPlugin plugin;
     public ShurikenListener(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -28,10 +28,8 @@ public class ShurikenListener implements Listener {
 
         if (event.getDamager() instanceof Snowball && event.getEntity() instanceof LivingEntity) {
 
-            final double totalDamage = event.getDamage() + ADDED_DAMAGE;
+            final double totalDamage = event.getDamage() + SHURICKEN_DAMAGE;
             event.setDamage(totalDamage);
-            System.out.println(totalDamage);
-            System.out.println(((LivingEntity)event.getEntity()).getHealth());
         }
     }
 

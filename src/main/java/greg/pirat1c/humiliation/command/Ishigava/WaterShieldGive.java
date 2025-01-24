@@ -1,4 +1,5 @@
-package greg.pirat1c.humiliation.command;
+package greg.pirat1c.humiliation.command.Ishigava;
+
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -11,14 +12,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-import static greg.pirat1c.humiliation.events.saske.SaskeConstants.NAME_OF_CHIDORY;
+public class WaterShieldGive implements CommandExecutor {
+    private static final Material material = Material.RED_DYE;
+    private static final String displayName = "Quick_Wall";
 
-
-public class  ChidoryGive implements CommandExecutor {
-    private static final Material material = Material.INK_SAC;
     @Override
-
-
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
 
         Player player = (Player) sender;
@@ -31,24 +29,19 @@ public class  ChidoryGive implements CommandExecutor {
         } else {
             System.out.println("no item");
         }
-
         return true;
     }
 
-    private ItemStack getItem() {
-
+    public static ItemStack getItem() {
         ItemStack sword = new ItemStack(material, 1);
         ItemMeta meta = sword.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(NAME_OF_CHIDORY);
+            meta.setDisplayName(displayName);
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();
-            // lore
 
             lore.add("something");
-
-
 
             meta.setLore(lore);
             sword.setItemMeta(meta);

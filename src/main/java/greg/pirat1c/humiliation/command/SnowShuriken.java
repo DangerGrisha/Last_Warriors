@@ -11,6 +11,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.SHURICKEN_NAME;
+
 public class SnowShuriken implements CommandExecutor {
 
 
@@ -31,12 +33,12 @@ public class SnowShuriken implements CommandExecutor {
         return true;
     }
 
-    private ItemStack getShuriken() {
+    public static ItemStack getShuriken() {
 
         ItemStack item = new ItemStack(Material.SNOWBALL, 1);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("Shuriken");
+            meta.setDisplayName(SHURICKEN_NAME);
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();

@@ -349,6 +349,7 @@ public class TrapsListener implements Listener {
         armorStand.setCanPickupItems(false);
         //armorStand.setInvulnerable(false);
         armorStand.setBasePlate(false);
+        armorStand.setInvulnerable(true);
         //if we add true in marker , armorstand will be Invulnerable
         //armorStand.setMarker(false);
         armorStand.setCustomName(TRAP_NAME);

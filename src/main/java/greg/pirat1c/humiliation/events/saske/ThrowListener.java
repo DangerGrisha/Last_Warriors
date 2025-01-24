@@ -1,6 +1,7 @@
 package greg.pirat1c.humiliation.events.saske;
 
 
+import greg.pirat1c.humiliation.command.SnowShuriken;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -15,6 +16,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.SHURICKEN_NAME;
 
 public class ThrowListener implements Listener {
 
@@ -31,28 +34,11 @@ public class ThrowListener implements Listener {
                 public void run() {
 
 
-                    player.getInventory().addItem(getShuriken());
+                    player.getInventory().addItem(SnowShuriken.getShuriken());
 
                 }
             }.runTaskLater(plugin, 200L);
         }
-    }
-    private ItemStack getShuriken() {
-
-        ItemStack item = new ItemStack(Material.SNOWBALL, 1);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName("Shuriken");
-            meta.setUnbreakable(true);
-
-            List<String> lore = new ArrayList<>();
-
-
-
-            meta.setLore(lore);
-            item.setItemMeta(meta);
-        }
-        return item;
     }
 }
 
