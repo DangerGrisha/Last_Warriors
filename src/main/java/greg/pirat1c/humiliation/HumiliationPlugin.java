@@ -1,5 +1,12 @@
 package greg.pirat1c.humiliation;
 
+//import com.comphenix.protocol.PacketType;
+//import com.comphenix.protocol.ProtocolLibrary;
+//import com.comphenix.protocol.ProtocolManager;
+//import com.comphenix.protocol.events.ListenerPriority;
+//import com.comphenix.protocol.events.PacketAdapter;
+//import com.comphenix.protocol.events.PacketContainer;
+//import com.comphenix.protocol.events.PacketEvent;
 import greg.pirat1c.humiliation.command.AttractionGive;
 import greg.pirat1c.humiliation.command.ChidoryGive;
 import greg.pirat1c.humiliation.command.HomeCommand;
@@ -47,6 +54,13 @@ public final class HumiliationPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+    //    ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+//        if (manager == null) {
+//            getLogger().severe("Failed to load ProtocolManager from ProtocolLib. Disabling plugin.");
+//            getServer().getPluginManager().disablePlugin(this);
+//            return;
+//       }
+
         cooldownManager = new CooldownManager(this);
 
         Map<UUID, HomeInfo> playerIdToHomeMap = new HashMap<>();
@@ -95,6 +109,7 @@ public final class HumiliationPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BridgeControlListener(this),this);
         Bukkit.getPluginManager().registerEvents(new LastWaterWallListener(this),this);
         Bukkit.getPluginManager().registerEvents(new AuraListener(this),this);
+        //Bukkit.getPluginManager().registerEvents(new ClonesListener(this),this);
 
 
         Bukkit.getPluginManager().registerEvents(new GlassPanelPlaceListener(this),this);
@@ -106,11 +121,14 @@ public final class HumiliationPlugin extends JavaPlugin {
         //Bukkit.getPluginManager().registerEvents(new ExperienceMinerListener(this), this);
         //Bukkit.getPluginManager().registerEvents(new KickSoccerBallListener(this), this);
 
+        getLogger().info("HumiliationPlugin is now enabled!");
+
     }
 
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        getLogger().info("HumiliationPlugin is now disabled!");
     }
 }

@@ -2,6 +2,7 @@ name: TrainingFirstPlugin
 version: '${project.version}'
 main: greg.pirat1c.humiliation.HumiliationPlugin
 api-version: 1.19
+softdepend: [ ProtocolLib ]
 authors: [ P1rat1C ]
 
 commands:
