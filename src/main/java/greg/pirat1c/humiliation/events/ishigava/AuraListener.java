@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import static greg.pirat1c.humiliation.events.ishigava.IshigavaConstants.*;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -55,7 +56,7 @@ public class AuraListener implements Listener {
         return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
                 player.getInventory().getItemInMainHand().getType() == org.bukkit.Material.RED_DYE &&
                 player.getInventory().getItemInMainHand().hasItemMeta() &&
-                "AURA".equals(player.getInventory().getItemInMainHand().getItemMeta().getDisplayName());
+                NAME_OF_ISHIGAVA_AURA.equals(player.getInventory().getItemInMainHand().getItemMeta().getDisplayName());
     }
 
     private void startAuraEffect(Player player) {

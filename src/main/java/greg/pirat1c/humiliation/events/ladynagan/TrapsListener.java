@@ -38,11 +38,10 @@ public class TrapsListener implements Listener {
 
     private final Map<String, Long> bombCooldowns = new HashMap<>();
     private final Map<Player, Integer> activeBombCounts = new HashMap<>();
-    private final String TAG_NAME = LadyConstants.LADY_TAG;
+    //private final String TAG_NAME = LadyConstants.LADY_TAG;
     private final Map<ArmorStand, BukkitRunnable> armorStandTimers = new HashMap<>();
     private final Map<Player, List<Long>> mineCooldowns = new HashMap<>();
-    private final int MAX_MINES = 3; // Maximum number of mines a player can place
-    private final int COOLDOWN_SECONDS = 15; // Cooldown for each mine in seconds/
+    //private final int MAX_MINES = 3; // Maximum number of mines a player can place
     private final int TIMER_SECONDS = 20; // 3 minutes timer
     private final Map<ArmorStand, Player> armorStandOwners = new HashMap<>();
 

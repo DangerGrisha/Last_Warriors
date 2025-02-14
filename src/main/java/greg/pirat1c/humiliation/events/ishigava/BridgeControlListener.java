@@ -10,10 +10,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import static greg.pirat1c.humiliation.events.ishigava.IshigavaConstants.*;
 
 public class BridgeControlListener implements Listener {
     private JavaPlugin plugin;
-    private static final String BRIDGE_ITEM_NAME = "Bridge"; // Название предмета
+    private static final String BRIDGE_ITEM_NAME = "Bridge"; // Item name
     private static boolean isLastDieWas = false;
     public static int currentDistance = 5;
 
@@ -24,17 +25,17 @@ public class BridgeControlListener implements Listener {
     @EventHandler
     public void onItemHeldChange(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
-        ItemStack currentItem = player.getInventory().getItem(event.getNewSlot()); // Предмет на новом слоте
+        ItemStack currentItem = player.getInventory().getItem(event.getNewSlot()); // Item in the new slot
 
-        // Проверяем, зажат ли Shift
+        // Check if Shift is being held
         if (player.isSneaking()) {
             int newSlot = event.getNewSlot();
             int oldSlot = event.getPreviousSlot();
 
-            // Проверяем, находится ли краситель "Bridge" на шестом слоте
-            ItemStack bridgeDye = player.getInventory().getItem(5); // 6-й слот, индекс 5
+            // Check if the red dye "Bridge" is in the sixth slot
+            ItemStack bridgeDye = player.getInventory().getItem(5); // 6th slot, index 5
             if (bridgeDye != null && bridgeDye.getType() == Material.RED_DYE && hasBridgeName(bridgeDye)) {
-                if ((newSlot == 3 && oldSlot == 5) || (newSlot == 4 && oldSlot == 5)) { // Уменьшение дистанции
+                if ((newSlot == 3 && oldSlot == 5) || (newSlot == 4 && oldSlot == 5)) { // Decrease distance
                     if (currentDistance > 5) {
                         currentDistance -= 1;
                         player.setLevel(currentDistance);
@@ -42,7 +43,7 @@ public class BridgeControlListener implements Listener {
                         player.sendMessage("Cannot decrease distance further, minimum is 5 blocks.");
                     }
                     event.setCancelled(true);
-                } else if ((newSlot == 6 && oldSlot == 5) || (newSlot == 7 && oldSlot == 5)) { // Увеличение дистанции
+                } else if ((newSlot == 6 && oldSlot == 5) || (newSlot == 7 && oldSlot == 5)) { // Increase distance
                     if (currentDistance < 20) {
                         currentDistance += 1;
                         player.setLevel(currentDistance);
@@ -58,9 +59,4 @@ public class BridgeControlListener implements Listener {
     private boolean hasBridgeName(ItemStack item) {
         return item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals("Bridge");
     }
-
-
-
-
-
 }

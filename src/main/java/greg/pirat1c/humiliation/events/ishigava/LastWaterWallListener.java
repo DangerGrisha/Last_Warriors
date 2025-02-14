@@ -16,9 +16,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import static greg.pirat1c.humiliation.events.ishigava.IshigavaConstants.*;
 
 public class LastWaterWallListener implements Listener {
-    private static final int maxBeacons = 12;
     private static boolean isOn = false;
     private boolean isInteracted = false;
 
@@ -34,7 +34,7 @@ public class LastWaterWallListener implements Listener {
         Player player = event.getPlayer();
         if (checkEventForRightClick(event, player) && !isOn && !isInteracted) {
             isOn = true;
-            initiateCycle(player, maxBeacons);
+            initiateCycle(player, MAX_BEACONS);
 
 
             isInteracted = true;
@@ -63,7 +63,7 @@ public class LastWaterWallListener implements Listener {
         return (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) &&
                 player.getInventory().getItemInMainHand().hasItemMeta() &&
                 player.getInventory().getItemInMainHand().getItemMeta().hasDisplayName() &&
-                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains("Last Wall");
+                player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().contains(NAME_OF_ISHIGAVA_WALL);
     }
 
     private void initiateCycle(Player player, int maxBeacons) {
@@ -82,7 +82,7 @@ public class LastWaterWallListener implements Listener {
         double distanceToBeacon = 1;
         double distanceToDuration = 2.5; // Distance for 'duration'
         double distanceToTemporary = 1.345; // Distance for 'temporary'
-        if(remainingBeacons == maxBeacons){//first time
+        if(remainingBeacons == MAX_BEACONS){//first time
             distanceToBeacon = 2.6;
             distanceToDuration = 2.5;
             //distanceToTemporary = 1.345;

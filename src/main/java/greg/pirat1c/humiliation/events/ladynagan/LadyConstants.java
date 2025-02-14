@@ -33,6 +33,7 @@ public interface LadyConstants {
     double DAMAGE_AMOUNT = 10.0; // Amount of damage dealt to enemies
     Material SET_UP_BLOCK = Material.PURPLE_CONCRETE;
     int SLOT_OF_TRAPS = 6;
+    int COOLDOWN_SECONDS = 15; // Cooldown for each mine in seconds/
 
     //SELF EXPLOSION
     float EXPLOSION_RADIUS_SE = 6.0f; // Radius of the explosion
