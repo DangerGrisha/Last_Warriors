@@ -23,9 +23,13 @@ import greg.pirat1c.humiliation.command.SnowShuriken;
 import greg.pirat1c.humiliation.command.SpawnCommand;
 import greg.pirat1c.humiliation.command.SpawnHome;
 import greg.pirat1c.humiliation.command.TestSpawnCommand;
+import greg.pirat1c.humiliation.command.fukuko.BombZoneGive;
+import greg.pirat1c.humiliation.command.fukuko.PistolGive;
 import greg.pirat1c.humiliation.command.ladynagan.*;
 import greg.pirat1c.humiliation.entity.HomeInfo;
 import greg.pirat1c.humiliation.events.FloorIce;
+import greg.pirat1c.humiliation.events.fukuko.BombZoneListener;
+import greg.pirat1c.humiliation.events.fukuko.PistolListener;
 import greg.pirat1c.humiliation.events.ishigava.*;
 import greg.pirat1c.humiliation.events.ladynagan.*;
 
@@ -87,6 +91,8 @@ public final class HumiliationPlugin extends JavaPlugin {
         getCommand("waterBridgesGive").setExecutor(new WaterBridgesGive());
         getCommand("lastBridgesGive").setExecutor(new LastWaterWallGive());
         getCommand("auraGive").setExecutor(new AuraGive());
+        getCommand("pistolGive").setExecutor(new PistolGive());
+        getCommand("bombZoneGive").setExecutor(new BombZoneGive());
 
 
         // Bukkit.getPluginManager().registerEvents(new Events(), this);
@@ -110,6 +116,9 @@ public final class HumiliationPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new LastWaterWallListener(this),this);
         Bukkit.getPluginManager().registerEvents(new AuraListener(this),this);
         //Bukkit.getPluginManager().registerEvents(new ClonesListener(this),this);
+
+        Bukkit.getPluginManager().registerEvents(new PistolListener(this),this);
+        Bukkit.getPluginManager().registerEvents(new BombZoneListener(this),this);
 
 
         Bukkit.getPluginManager().registerEvents(new GlassPanelPlaceListener(this),this);

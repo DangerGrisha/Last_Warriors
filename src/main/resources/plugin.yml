@@ -58,3 +58,7 @@ commands:
     description: last WALL for Ishigava
   auraGive:
     description: aura ult for Ishigava
+  pistolGive:
+    description: fukuko's pistol gun
+  bombZoneGive:
+    description: fukuko's ult
