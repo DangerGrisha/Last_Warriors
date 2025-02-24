@@ -37,11 +37,13 @@ public class BombZoneListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
-        final Block clickedBlock = event.getClickedBlock();
-        final String playerTeam = getTeam(player);
-        if (clickedBlock == null) return;
-        Location bombZoneLocation = clickedBlock.getLocation().add(0,1,0);
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && checkEventForName(player)) {
+            final Block clickedBlock = event.getClickedBlock();
+            final String playerTeam = getTeam(player);
+            if (clickedBlock == null) return;
+            Location bombZoneLocation = clickedBlock.getLocation().add(0,1,0);
+
+
             createParticleSquare(bombZoneLocation, radius);
             createCycleOfCheckPlayers(bombZoneLocation, radius, playerTeam);
             removeBombZoneAfterDelay(bombZoneLocation, 20);

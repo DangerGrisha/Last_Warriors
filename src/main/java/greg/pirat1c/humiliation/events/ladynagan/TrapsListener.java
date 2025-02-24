@@ -394,7 +394,7 @@ public class TrapsListener implements Listener {
             @Override
             public void run() {
                 if (block.getType() == SET_UP_BLOCK) {
-                    block.setType(Material.AIR);
+                        block.setType(Material.AIR);
                 }
             }
         }.runTaskLater(plugin, 0L);

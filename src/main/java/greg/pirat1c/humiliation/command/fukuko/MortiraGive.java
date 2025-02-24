@@ -12,11 +12,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-import static greg.pirat1c.humiliation.events.fukuko.FukukoConstants.NAME_OF_ULT_FUKUKO;
+import static greg.pirat1c.humiliation.events.fukuko.FukukoConstants.MATERIAL_OF_MORTIRA_FUKUKO;
+import static greg.pirat1c.humiliation.events.fukuko.FukukoConstants.NAME_OF_MORTIRA_FUKUKO;
 
-public class BombZoneGive implements CommandExecutor {
-    private static final Material material = Material.REDSTONE_BLOCK;
-    private static final String displayName = NAME_OF_ULT_FUKUKO;
+public class MortiraGive implements CommandExecutor {
+    private static final Material material = MATERIAL_OF_MORTIRA_FUKUKO;
+    private static final String displayName = NAME_OF_MORTIRA_FUKUKO;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
