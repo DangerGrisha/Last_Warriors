@@ -67,3 +67,5 @@ commands:
   setclass:
     usage: /setclass <LadyNagan|Swordsman|Sniper>
     description: Set your player class
+  giveladynagan:
+    description: Gives all LadyNagan items in correct slots

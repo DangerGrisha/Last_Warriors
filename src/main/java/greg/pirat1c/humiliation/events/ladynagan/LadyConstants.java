@@ -3,7 +3,7 @@ package greg.pirat1c.humiliation.events.ladynagan;
 import org.bukkit.Material;
 
 public interface LadyConstants {
-    String LADY_TAG = "LadyNagan";
+    //String LADY_TAG = "LadyNagan";
 
     //SNIPER RIFFLE
     String SNIPER_RIFLE_NAME= "T-742K Mori";

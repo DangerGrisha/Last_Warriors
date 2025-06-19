@@ -3,7 +3,7 @@ package greg.pirat1c.humiliation.StaticInventory;
 import java.util.*;
 
 public enum PlayerClass {
-    LADY_NAGAN("LadyNagan", Arrays.asList(0, 5, 6, 7, 8)),
+    LADY_NAGAN("LadyNagan", Arrays.asList(0, 2, 4, 6, 7, 8)),
     SWORDSMAN("Swordsman", Arrays.asList(0, 1, 2)),
     SNIPER("Sniper", Arrays.asList(0, 4, 7));
 

@@ -26,7 +26,7 @@ import static greg.pirat1c.humiliation.events.ladynagan.LadyConstants.*;
  * ability has cooldown
  */
 public class ExplosionListener implements Listener {
-    private final String tagCheck = LadyConstants.LADY_TAG;
+    //private final String tagCheck = LadyConstants.LADY_TAG;
     private final String dyeName = "Self-Destruction";
 
     private final JavaPlugin plugin;
@@ -112,7 +112,7 @@ public class ExplosionListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
 
         Player player = event.getPlayer();
-        if ((player.getScoreboardTags().contains(tagCheck) && checkEventForRightClick(event, player)) && !isInteracted) {
+        if (!isInteracted && checkEventForRightClick(event, player)) {
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
             if (itemInHand.getType() == Material.RED_DYE || itemInHand.getType() == Material.GREEN_DYE) {
                 // we are making a delay to prevent a bug with fast reuse

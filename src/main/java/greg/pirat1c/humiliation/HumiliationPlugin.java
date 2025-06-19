@@ -98,6 +98,7 @@ public final class HumiliationPlugin extends JavaPlugin {
         getCommand("pistolGive").setExecutor(new PistolGive());
         getCommand("bombZoneGive").setExecutor(new BombZoneGive());
         getCommand("mortiraGive").setExecutor(new MortiraGive());
+        getCommand("giveladynagan").setExecutor(new LadyNaganGive());
 
 
         // Bukkit.getPluginManager().registerEvents(new Events(), this);
