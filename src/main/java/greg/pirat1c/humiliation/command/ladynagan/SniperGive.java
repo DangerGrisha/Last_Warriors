@@ -1,6 +1,7 @@
 package greg.pirat1c.humiliation.command.ladynagan;
 
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,7 +38,7 @@ public class SniperGive implements CommandExecutor {
         ItemStack item = new ItemStack(material, 1);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(displayName);
+            meta.displayName(Component.text(displayName));
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();

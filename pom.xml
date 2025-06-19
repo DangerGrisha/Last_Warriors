@@ -12,32 +12,35 @@
     <name>LastWarriors</name>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- please do not use this property below unless strictly necessary,
              read README.md for the detailed instructions on setting up the deployment dir
-
            <minecraft.local.dir>D:/blabla/blala</minecraft.local.dir> -->
     </properties>
 
     <build>
         <plugins>
+            <!-- Компилятор -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${maven.compiler.release}</release>
                 </configuration>
             </plugin>
+
+            <!-- Shade для fat-jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>shade</id>
+                        <phase>verify</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
@@ -50,13 +53,10 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
-                                        <exclude>META-INF/LICENSE</exclude>
-                                        <exclude>META-INF/NOTICE</exclude>
                                         <exclude>META-INF/LICENSE*</exclude>
                                         <exclude>META-INF/NOTICE*</exclude>
                                         <exclude>META-INF/DEPENDENCIES*</exclude>
                                         <exclude>META-INF/versions/9/module-info</exclude>
-                                        <exclude>META-INF/maven/net.bytebuddy/**</exclude>
                                         <exclude>META-INF/native-image/**</exclude>
                                     </excludes>
                                 </filter>
@@ -71,6 +71,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Копирование в plugins/ -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -96,6 +98,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Считывание dev.properties -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
@@ -115,6 +119,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Проверка что путь до папки сервера указан -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -130,9 +136,9 @@
                             <rules>
                                 <requireProperty>
                                     <property>minecraft.local.dir</property>
-                                    <message>You must set a "minecraft.local.dir" property. Read the README.md file for instructions. The parameter should point to the minecraft server dir</message>
+                                    <message>You must set a "minecraft.local.dir" property. Read the README.md file for instructions.</message>
                                     <regex>.+(?&lt;!plugins)$</regex>
-                                    <regexMessage>Please define the actual server dir without "/plugins" dir. E.G. "C:/ProgramFiles/minecraft-server"</regexMessage>
+                                    <regexMessage>Should be path without trailing /plugins</regexMessage>
                                 </requireProperty>
                             </rules>
                             <fail>true</fail>
@@ -141,6 +147,7 @@
                 </executions>
             </plugin>
         </plugins>
+
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -168,7 +175,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

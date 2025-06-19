@@ -3,6 +3,7 @@ package greg.pirat1c.humiliation.events.ladynagan;
 import greg.pirat1c.humiliation.command.ladynagan.ExplosionGive;
 import greg.pirat1c.humiliation.command.ladynagan.FlyGive;
 import greg.pirat1c.humiliation.command.ladynagan.UltraGive;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -109,7 +110,7 @@ public class FlyListener implements Listener {
     private ItemStack createFlyPlusFeather() {
         ItemStack feather = new ItemStack(Material.FEATHER);
         ItemMeta meta = feather.getItemMeta();
-        meta.setDisplayName("Fly+");
+        meta.displayName(Component.text("Fly+"));
         feather.setItemMeta(meta);
         return feather;
     }
@@ -118,7 +119,7 @@ public class FlyListener implements Listener {
     private ItemStack createFlyFeather() {
         ItemStack feather = new ItemStack(Material.FEATHER);
         ItemMeta meta = feather.getItemMeta();
-        meta.setDisplayName("Start Fly");
+        meta.displayName(Component.text("Start Fly"));
         feather.setItemMeta(meta);
         return feather;
     }
@@ -127,7 +128,7 @@ public class FlyListener implements Listener {
         ItemStack itemInHand = player.getInventory().getItemInMainHand();
         ItemMeta meta = itemInHand.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("Fly+ " + (flyCounter));// Update the display name
+            meta.displayName(Component.text("Fly+ " + (flyCounter)));// Update the display name
             itemInHand.setItemMeta(meta);
         }
     }

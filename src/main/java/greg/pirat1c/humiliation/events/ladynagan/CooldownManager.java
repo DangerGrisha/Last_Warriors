@@ -1,5 +1,6 @@
 package greg.pirat1c.humiliation.events.ladynagan;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -133,7 +134,7 @@ public class CooldownManager {
         ItemStack glassPane = new ItemStack(glassColor);
         ItemMeta meta = glassPane.getItemMeta();
 
-        meta.setDisplayName("§eCooldown: " + remainingTime + " seconds remaining");
+        meta.displayName(Component.text("§eCooldown: " + remainingTime + " seconds remaining"));
         meta.setLore(java.util.Collections.singletonList("§6Ability: " + ability));
         glassPane.setItemMeta(meta);
 

@@ -3,6 +3,7 @@ package greg.pirat1c.humiliation.events.ladynagan;
 import com.sun.jdi.event.EventSet;
 import greg.pirat1c.humiliation.command.ladynagan.SniperGive;
 import greg.pirat1c.humiliation.command.ladynagan.UltraGive;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
@@ -531,7 +532,7 @@ public class SniperListener extends SniperGive implements Listener {
         // Give the ArmorStand a red dye renamed as "Bullet"
         ItemStack bullet = new ItemStack(Material.RED_DYE);
         ItemMeta bulletMeta = bullet.getItemMeta();
-        bulletMeta.setDisplayName("Bullet");
+        bulletMeta.displayName(Component.text("Bullet"));
         bullet.setItemMeta(bulletMeta);
         armorStand.getEquipment().setItemInMainHand(bullet);
 
@@ -547,7 +548,7 @@ public class SniperListener extends SniperGive implements Listener {
         ItemStack crossbow = new ItemStack(Material.CROSSBOW);
         crossbow.setDurability((short) crossbow.getType().getMaxDurability());
         ItemMeta meta = crossbow.getItemMeta();
-        meta.setDisplayName(SNIPER_RIFLE_NAME);
+        meta.displayName(Component.text(SNIPER_RIFLE_NAME));
         crossbow.setItemMeta(meta);
         ItemStack arrow = new ItemStack(Material.ARROW);
         CrossbowMeta crossbowMeta = (CrossbowMeta) crossbow.getItemMeta();
@@ -561,7 +562,7 @@ public class SniperListener extends SniperGive implements Listener {
         ItemStack crossbow = new ItemStack(Material.CROSSBOW);
         crossbow.setDurability((short) crossbow.getType().getMaxDurability());
         ItemMeta meta = crossbow.getItemMeta();
-        meta.setDisplayName(SNIPER_RIFLE_NAME_MODIFIED);
+        meta.displayName(Component.text(SNIPER_RIFLE_NAME_MODIFIED));
         crossbow.setItemMeta(meta);
         ItemStack arrow = new ItemStack(Material.ARROW);
         CrossbowMeta crossbowMeta = (CrossbowMeta) crossbow.getItemMeta();
@@ -575,7 +576,7 @@ public class SniperListener extends SniperGive implements Listener {
         ItemStack crossbow = new ItemStack(Material.CROSSBOW);
         crossbow.setDurability((short) crossbow.getType().getMaxDurability());
         ItemMeta meta = crossbow.getItemMeta();
-        meta.setDisplayName(SNIPER_RIFLE_NAME_ULTRA);
+        meta.displayName(Component.text(SNIPER_RIFLE_NAME_ULTRA));
         crossbow.setItemMeta(meta);
         ItemStack arrow = new ItemStack(Material.ARROW);
         CrossbowMeta crossbowMeta = (CrossbowMeta) crossbow.getItemMeta();

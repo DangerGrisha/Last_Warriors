@@ -64,3 +64,6 @@ commands:
     description: fukuko's ult
   mortiraGive:
     description: fukuko's mortira
+  setclass:
+    usage: /setclass <LadyNagan|Swordsman|Sniper>
+    description: Set your player class

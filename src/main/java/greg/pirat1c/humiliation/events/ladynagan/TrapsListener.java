@@ -3,6 +3,7 @@ package greg.pirat1c.humiliation.events.ladynagan;
 import greg.pirat1c.humiliation.command.ladynagan.TrapGive;
 import greg.pirat1c.humiliation.command.ladynagan.UltraGive;
 import greg.pirat1c.humiliation.entity.ladynagan.TrapMine;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -358,7 +359,7 @@ public class TrapsListener implements Listener {
 
         ItemStack redDye = new ItemStack(Material.BLUE_DYE);
         ItemMeta dyeMeta = redDye.getItemMeta();
-        dyeMeta.setDisplayName("TrapLedy");
+        dyeMeta.displayName(Component.text("TrapLedy"));
         redDye.setItemMeta(dyeMeta);
         armorStand.getEquipment().setItemInMainHand(redDye);
 
@@ -453,7 +454,7 @@ public class TrapsListener implements Listener {
         ItemStack grayPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta meta = grayPane.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.GRAY + "Mine Cooldown");
+            meta.displayName(Component.text(ChatColor.GRAY + "Mine Cooldown"));
             grayPane.setItemMeta(meta);
         }
         return grayPane;

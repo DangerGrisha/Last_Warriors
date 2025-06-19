@@ -7,6 +7,10 @@ package greg.pirat1c.humiliation;
 //import com.comphenix.protocol.events.PacketAdapter;
 //import com.comphenix.protocol.events.PacketContainer;
 //import com.comphenix.protocol.events.PacketEvent;
+import greg.pirat1c.humiliation.StaticInventory.GlassPanelPlaceListener;
+import greg.pirat1c.humiliation.StaticInventory.PlayerClassManager;
+import greg.pirat1c.humiliation.StaticInventory.SetClassCommand;
+import greg.pirat1c.humiliation.StaticInventory.StaticInventoryListener;
 import greg.pirat1c.humiliation.command.AttractionGive;
 import greg.pirat1c.humiliation.command.ChidoryGive;
 import greg.pirat1c.humiliation.command.HomeCommand;
@@ -43,9 +47,6 @@ import greg.pirat1c.humiliation.events.saske.ShurikenListener;
 import greg.pirat1c.humiliation.events.saske.SpeedAfterKillListener;
 import greg.pirat1c.humiliation.events.saske.SwordSaskeListener;
 import greg.pirat1c.humiliation.events.saske.ThrowListener;
-import greg.pirat1c.humiliation.events.soccer.ExperienceMinerListener;
-import greg.pirat1c.humiliation.events.soccer.KickSoccerBallListener;
-import greg.pirat1c.humiliation.events.soccer.SlimeSoccerListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -57,6 +58,7 @@ public final class HumiliationPlugin extends JavaPlugin {
     public static final String SPAWN_ENTITY_COMMAND_NAME = "spawnEntity";
     public static final String HUMILIATION_COMMAND_NAME = "humiliateMe";
     public CooldownManager cooldownManager = null;
+    private PlayerClassManager playerClassManager;
 
     @Override
     public void onEnable() {
@@ -126,7 +128,14 @@ public final class HumiliationPlugin extends JavaPlugin {
 
 
         Bukkit.getPluginManager().registerEvents(new GlassPanelPlaceListener(this),this);
-        //Bukkit.getPluginManager().registerEvents(new StaticInventoryListener(this),this);
+
+        this.playerClassManager = new PlayerClassManager(this);
+
+        Bukkit.getPluginManager().registerEvents(
+                new StaticInventoryListener(this, playerClassManager),
+                this
+        );
+        getCommand("setclass").setExecutor(new SetClassCommand(this));
 
         //Bukkit.getPluginManager().registerEvents(new SwordTest(this), this);
         //PluginManager pluginManager = Bukkit.getPluginManager();
@@ -137,7 +146,9 @@ public final class HumiliationPlugin extends JavaPlugin {
         getLogger().info("HumiliationPlugin is now enabled!");
 
     }
-
+    public PlayerClassManager getPlayerClassManager() {
+        return playerClassManager;
+    }
 
     @Override
     public void onDisable() {
