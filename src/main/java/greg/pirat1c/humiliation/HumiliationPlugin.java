@@ -13,6 +13,8 @@ import greg.pirat1c.humiliation.StaticInventory.SetClassCommand;
 import greg.pirat1c.humiliation.StaticInventory.StaticInventoryListener;
 import greg.pirat1c.humiliation.command.AttractionGive;
 import greg.pirat1c.humiliation.command.ChidoryGive;
+import greg.pirat1c.humiliation.command.GiveArcherKitCommand;
+import greg.pirat1c.humiliation.command.GiveStarterKitCommand;
 import greg.pirat1c.humiliation.command.HomeCommand;
 import greg.pirat1c.humiliation.command.HumiliationCommand;
 import greg.pirat1c.humiliation.command.Ishigava.AuraGive;
@@ -31,6 +33,7 @@ import greg.pirat1c.humiliation.command.fukuko.BombZoneGive;
 import greg.pirat1c.humiliation.command.fukuko.MortiraGive;
 import greg.pirat1c.humiliation.command.fukuko.PistolGive;
 import greg.pirat1c.humiliation.command.ladynagan.*;
+import greg.pirat1c.humiliation.command.saske.SaskeGive;
 import greg.pirat1c.humiliation.entity.HomeInfo;
 import greg.pirat1c.humiliation.events.FloorIce;
 import greg.pirat1c.humiliation.events.fukuko.BombZoneListener;
@@ -99,18 +102,24 @@ public final class HumiliationPlugin extends JavaPlugin {
         getCommand("bombZoneGive").setExecutor(new BombZoneGive());
         getCommand("mortiraGive").setExecutor(new MortiraGive());
         getCommand("giveladynagan").setExecutor(new LadyNaganGive());
+        getCommand("givesaske").setExecutor(new SaskeGive());
+
+        getCommand("givestarterkit").setExecutor(new GiveStarterKitCommand());
+        getCommand("givearcherkit").setExecutor(new GiveArcherKitCommand());
+
 
 
         // Bukkit.getPluginManager().registerEvents(new Events(), this);
-        Bukkit.getPluginManager().registerEvents(new FloorIce(this), this);
+        //Bukkit.getPluginManager().registerEvents(new FloorIce(this), this);
         Bukkit.getPluginManager().registerEvents(new SwordSaskeListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ShurikenListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new ThrowListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new BodyReplacemenListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new ResistanceAfterKillListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new SpeedAfterKillListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new AttractionListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new ChidoryListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new ThrowListener(this, cooldownManager), this);
+        Bukkit.getPluginManager().registerEvents(new BodyReplacemenListener(this, cooldownManager), this);
+        //Bukkit.getPluginManager().registerEvents(new ResistanceAfterKillListener(this), this);
+        //Bukkit.getPluginManager().registerEvents(new SpeedAfterKillListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new AttractionListener(this, cooldownManager), this);
+        Bukkit.getPluginManager().registerEvents(new ChidoryListener(this, cooldownManager), this);
+
         Bukkit.getPluginManager().registerEvents(new SniperListener(this, cooldownManager), this);
         Bukkit.getPluginManager().registerEvents(new FlyListener(this,cooldownManager),this);
         Bukkit.getPluginManager().registerEvents(new ExplosionListener(this, cooldownManager),this);

@@ -1,5 +1,6 @@
 package greg.pirat1c.humiliation.events.ishigava;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -58,7 +59,7 @@ public class WaterShieldListener implements Listener {
 
             ItemStack limeDye = new ItemStack(Material.LIME_DYE);
             ItemMeta dyeMeta = limeDye.getItemMeta();
-            dyeMeta.setDisplayName("WaterShieldMove");
+            dyeMeta.displayName(Component.text("WaterShieldMove"));
             limeDye.setItemMeta(dyeMeta);
             stand.getEquipment().setItemInMainHand(limeDye);
 
@@ -97,7 +98,7 @@ public class WaterShieldListener implements Listener {
             if (isMain) {
                 ItemStack limeDye = new ItemStack(Material.LIME_DYE);
                 ItemMeta dyeMeta = limeDye.getItemMeta();
-                dyeMeta.setDisplayName("WaterShield");
+                dyeMeta. displayName(Component.text("WaterShield"));
                 limeDye.setItemMeta(dyeMeta);
                 stand.getEquipment().setItemInMainHand(limeDye);
             }

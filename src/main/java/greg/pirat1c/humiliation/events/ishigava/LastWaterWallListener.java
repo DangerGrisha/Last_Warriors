@@ -1,5 +1,6 @@
 package greg.pirat1c.humiliation.events.ishigava;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
@@ -136,7 +137,7 @@ public class LastWaterWallListener implements Listener {
         if (!"temporary".equals(entityTag)) {
             ItemStack limeDye = new ItemStack(Material.LIME_DYE);
             ItemMeta dyeMeta = limeDye.getItemMeta();
-            dyeMeta.setDisplayName("Last Wall");
+            dyeMeta.displayName(Component.text("Last Wall"));
             limeDye.setItemMeta(dyeMeta);
             armorStand.getEquipment().setItemInMainHand(limeDye);
         } else {

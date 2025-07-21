@@ -18,13 +18,8 @@ public class SetClassCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only players can run this command.");
-            return true;
-        }
-
-        if (args.length != 1) {
-            player.sendMessage("§cUsage: /setclass <LadyNagan|Swordsman|Sniper>");
+        if (args.length < 1 || args.length > 2) {
+            sender.sendMessage("§cUsage: /setclass <LadyNagan|Saske|Sniper> [player]");
             return true;
         }
 
@@ -32,23 +27,44 @@ public class SetClassCommand implements CommandExecutor {
         PlayerClass chosenClass = PlayerClass.fromTag(inputTag);
 
         if (chosenClass == null) {
-            player.sendMessage("§cInvalid class. Available: LadyNagan, Swordsman, Sniper");
+            sender.sendMessage("§cInvalid class. Available: LadyNagan, Saske, Sniper");
             return true;
         }
 
+        Player target;
 
+        if (args.length == 2) {
+            target = plugin.getServer().getPlayerExact(args[1]);
+            if (target == null) {
+                sender.sendMessage("§cPlayer not found: " + args[1]);
+                return true;
+            }
+        } else {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("§cOnly players can use this without specifying a target.");
+                return true;
+            }
+            target = (Player) sender;
+        }
+
+        // Удаляем старые теги
+        for (PlayerClass pc : PlayerClass.values()) {
+            target.removeScoreboardTag(pc.getTag());
+        }
+
+        // Добавляем новый тег
+        target.addScoreboardTag(chosenClass.getTag());
+
+        // Сохраняем в PersistentDataContainer
         NamespacedKey key = new NamespacedKey(plugin, "class_tag");
-        player.getPersistentDataContainer().set(key, PersistentDataType.STRING, chosenClass.getTag());
-        player.sendMessage("§aYour class has been set to §e" + chosenClass.getTag());
+        target.getPersistentDataContainer().set(key, PersistentDataType.STRING, chosenClass.getTag());
 
-        player.getPersistentDataContainer().set(
-                new NamespacedKey(plugin, "class_tag"),
-                PersistentDataType.STRING,
-                chosenClass.getTag()
-        );
-        player.sendMessage("§aYour class has been set to §e" + chosenClass.getTag());
-
+        target.sendMessage("§aYour class has been set to §e" + chosenClass.getTag());
+        if (!target.equals(sender)) {
+            sender.sendMessage("§aSet class §e" + chosenClass.getTag() + "§a for §b" + target.getName());
+        }
 
         return true;
     }
+
 }

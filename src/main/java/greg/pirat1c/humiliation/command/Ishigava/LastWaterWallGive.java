@@ -1,6 +1,7 @@
 package greg.pirat1c.humiliation.command.Ishigava;
 
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -36,7 +37,7 @@ public class LastWaterWallGive implements CommandExecutor {
         ItemStack sword = new ItemStack(material, 1);
         ItemMeta meta = sword.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(displayName);
+            meta.displayName(Component.text(displayName));
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();

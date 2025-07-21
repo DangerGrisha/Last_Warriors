@@ -66,16 +66,15 @@ public class ExplosionListener implements Listener {
     private void delayForUlta(Player player, String nameOfAbilitySpecific, int inventorySlot, int delayInSeconds) {
 
         cooldownManager.startCooldown(player, nameOfAbilitySpecific, inventorySlot, delayInSeconds, true);
-        // Schedule the dye change back to red after 20 seconds
+
         new BukkitRunnable() {
             @Override
             public void run() {
-                // Check if the player still has the yellow dye
                 if (cooldownManager.isCooldownComplete(player, nameOfAbilitySpecific)) {
                     player.getInventory().setItem(inventorySlot, ExplosionGive.getItem());
                 }
             }
-        }.runTaskLater(plugin, delayInSeconds * 20L); // 20 ticks per second, so 20 seconds is 20 * 20 ticks
+        }.runTaskLater(plugin, (delayInSeconds + 1) * 20L); // +1 секунда = +20 тиков
     }
 
 

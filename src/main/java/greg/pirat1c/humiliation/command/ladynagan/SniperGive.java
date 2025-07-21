@@ -22,7 +22,7 @@ public class SniperGive implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        player.getInventory().addItem(getItem());
+        player.getInventory().addItem(getItem(player));
         ItemStack itemInSecondSlot = player.getInventory().getItem(2);
         if (itemInSecondSlot != null) {
             System.out.println("item found");
@@ -34,7 +34,9 @@ public class SniperGive implements CommandExecutor {
         return true;
     }
 
-    public static ItemStack getItem() {
+    public static ItemStack getItem(Player player) {
+        if (!player.getScoreboardTags().contains("LadyNagan")) return null;
+
         ItemStack item = new ItemStack(material, 1);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {

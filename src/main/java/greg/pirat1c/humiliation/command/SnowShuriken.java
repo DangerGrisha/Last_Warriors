@@ -1,5 +1,7 @@
 package greg.pirat1c.humiliation.command;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -35,17 +37,21 @@ public class SnowShuriken implements CommandExecutor {
 
     public static ItemStack getShuriken() {
 
-        ItemStack item = new ItemStack(Material.SNOWBALL, 1);
+        ItemStack item = new ItemStack(Material.SNOWBALL, 3);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(SHURICKEN_NAME);
+            meta.displayName(Component.text(SHURICKEN_NAME));
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();
 
 
 
-            meta.setLore(lore);
+            meta.lore(List.of(
+                    Component.text("Line 1").color(NamedTextColor.GRAY),
+                    Component.text("Line 2").color(NamedTextColor.DARK_PURPLE)
+            ));
+
             item.setItemMeta(meta);
         }
         return item;

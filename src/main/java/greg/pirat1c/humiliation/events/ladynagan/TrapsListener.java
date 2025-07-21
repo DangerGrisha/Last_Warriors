@@ -43,7 +43,7 @@ public class TrapsListener implements Listener {
     private final Map<ArmorStand, BukkitRunnable> armorStandTimers = new HashMap<>();
     private final Map<Player, List<Long>> mineCooldowns = new HashMap<>();
     //private final int MAX_MINES = 3; // Maximum number of mines a player can place
-    private final int TIMER_SECONDS = 20; // 3 minutes timer
+    private final int TIMER_SECONDS = 240; // 4 minutes timer
     private final Map<ArmorStand, Player> armorStandOwners = new HashMap<>();
 
     //private volatile Boolean isInteracted = false;

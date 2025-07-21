@@ -65,7 +65,19 @@ commands:
   mortiraGive:
     description: fukuko's mortira
   setclass:
-    usage: /setclass <LadyNagan|Swordsman|Sniper>
-    description: Set your player class
+    usage: /setclass <LadyNagan|Saske|Sniper> [player]
+    description: Set player class tag
   giveladynagan:
+    usage: /giveladynagan <player>
     description: Gives all LadyNagan items in correct slots
+  givestarterkit:
+    usage: /givestarterkit <player>
+    description: Gives diamond armor and gear
+  givearcherkit:
+    usage: /givearcherkit <player>
+    description: Gives archer kit
+  givesaske:
+    usage: /givesaske <player>
+    description: Gives the Saske item kit
+
+

@@ -4,8 +4,8 @@ import java.util.*;
 
 public enum PlayerClass {
     LADY_NAGAN("LadyNagan", Arrays.asList(0, 2, 4, 6, 7, 8)),
-    SWORDSMAN("Swordsman", Arrays.asList(0, 1, 2)),
-    SNIPER("Sniper", Arrays.asList(0, 4, 7));
+    SWORDSMAN("Clear", List.of()),
+    SASKE("Saske", Arrays.asList(0, 2, 4, 6, 7, 8));
 
     private final String tag;
     private final List<Integer> staticSlots;

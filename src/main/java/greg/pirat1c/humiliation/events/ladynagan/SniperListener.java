@@ -10,6 +10,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -186,8 +187,7 @@ public class SniperListener extends SniperGive implements Listener {
                 !(newItem.getItemMeta().getDisplayName().equals(SNIPER_RIFLE_NAME) ||
                         newItem.getItemMeta().getDisplayName().equals(SNIPER_RIFLE_NAME_MODIFIED) ||
                         newItem.getItemMeta().getDisplayName().equals(SNIPER_RIFLE_NAME_ULTRA));
-
-        if (wearingPumpkin && isNotSniperRifle) {
+        if (wearingPumpkin && isNotSniperRifle && player.getScoreboardTags().contains("LadyNagan")) {
             removePumpkinAndEffect(player);
             if (isUlting) {
                 isUltaCanceled = true;
@@ -202,9 +202,9 @@ public class SniperListener extends SniperGive implements Listener {
     }
     private void returnSniperToOriginalSlot(Player player, ItemStack sniperRifle) {
         if (RIFLE_SLOT >= 0 && RIFLE_SLOT <= 8) { // Ensure the slot is within hotbar range
-            player.getInventory().setItem(RIFLE_SLOT, SniperGive.getItem());
+            player.getInventory().setItem(RIFLE_SLOT, SniperGive.getItem(player));
         } else {
-            player.getInventory().addItem(SniperGive.getItem()); // Fallback if slot is invalid
+            player.getInventory().addItem(SniperGive.getItem(player)); // Fallback if slot is invalid
         }
     }
 
@@ -278,7 +278,7 @@ public class SniperListener extends SniperGive implements Listener {
          */
 
         //Check if ultra button is pressed on RBM and if we do then ult
-        if ((checkEventForRightClick(event, player, NAME_OF_ULTRA_BUTTON, Material.STICK) && !isInteracted) && !isUltaCanceled && !isUlting) {
+        if ((checkEventForRightClick(event, player, NAME_OF_ULTRA_BUTTON, Material.STICK) && !isInteracted) && !isUltaCanceled && !isUlting && player.getScoreboardTags().contains("LadyNagan")) {
             event.setCancelled(true);
             notInteract();
             ultShootSystem(event, player);
@@ -322,28 +322,30 @@ public class SniperListener extends SniperGive implements Listener {
     }
 
     private void delayForUlta(Player player, String nameOfAbilitySpecific , int inventorySlot, long delayInSeconds) {
-
         // Start the cooldown using the CooldownManager
         cooldownManager.startCooldown(player, nameOfAbilitySpecific, inventorySlot, delayInSeconds, true);
-       // System.out.println("DELAY 1");
-        // Additional logic that runs after the cooldown ends
+
+        // Восстановим предмет чуть позже окончания визуального кулдауна
         new BukkitRunnable() {
             @Override
             public void run() {
                 if (cooldownManager.isCooldownComplete(player, nameOfAbilitySpecific)) {
-                    //System.out.println("DELAY 2");
                     isUltaCanceled = false;
-                    //System.out.println("inDelay - is ulting ? = " + isUlting);
-                   // System.out.println("inDelay - is ultingCancel ? = " + isUltaCanceled);
                     player.getInventory().setItem(inventorySlot, UltraGive.getItem());
                 }
             }
-        }.runTaskLater(plugin, delayInSeconds * 20L); // Convert seconds to ticks (20 ticks = 1 second)
+        }.runTaskLater(plugin, (delayInSeconds + 1) * 20L); // добавили 1 секунду
     }
+
 
 
     //Shoot System Shoot SystemShoot SystemShoot SystemShoot System Shoot System
     private void shoot(Player player, ArmorStand armorStand, Vector direction, boolean isUlting, PlayerInteractEvent event) {
+
+        // Play the custom shoot sound for all nearby players
+        // Play thunder sound for 3 seconds
+
+        player.getWorld().playSound(player.getLocation(),"ladynagan.shoot",1.0f, 1.0f);
 
         final boolean[] directionChanged = {false}; // Declare an array with one element to make it effectively final
 
@@ -391,7 +393,7 @@ public class SniperListener extends SniperGive implements Listener {
                         updateArmorStandRotation(armorStand, newDirection);
                     }
                 }
-                armorStand.setVelocity(finalDirection.normalize().multiply(1.0)); // Set weak motion forward
+                armorStand.setVelocity(finalDirection.normalize().multiply(2.0)); // Set weak motion forward
                 checkBulletCollision(armorStand, isUlting, player);
             }
         }, 0L, 2L).getTaskId(); // 0 tick delay, 2 tick interval (10 ticks per second)
@@ -609,20 +611,21 @@ public class SniperListener extends SniperGive implements Listener {
     public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
 
-        // Check if the player is wearing a pumpkin and is sneaking
-        if (wearingPumpkin && event.isSneaking()) {
+        if (wearingPumpkin && event.isSneaking() && player.getScoreboardTags().contains("LadyNagan")) {
             setSlowEffect(player, 5);
         }
         if (wearingPumpkin && !event.isSneaking() && slowEffect != null) {
-            // Remove the slow effect if it exists and the player is not sneaking
             player.removePotionEffect(slowEffect.getType());
             setSlowEffect(player, 3);
         }
     }
 
+
     public void setSlowEffect(Player player, int level) {
-        slowEffect = new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, level);
-        player.addPotionEffect(slowEffect);
+        if(player.getScoreboardTags().contains("LadyNagan")){
+            slowEffect = new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, level);
+            player.addPotionEffect(slowEffect);
+        }
     }
 
     private boolean checkEventForRightClick(PlayerInteractEvent event, Player player, String nameOfItem, Material material) {
@@ -667,12 +670,14 @@ public class SniperListener extends SniperGive implements Listener {
             setSlowEffect(player, 3);
 
                 // Replace the stick with a loaded crossbow
-                previousItemInMainHand = player.getInventory().getItemInMainHand();
                 ItemStack crossbow = createT742KMoriCrossbow();
                 player.getInventory().setItemInMainHand(crossbow);
         } else { // if in zoom
             removePumpkinAndEffect(player); // wearingPumpkin = false;
-            player.getInventory().setItemInMainHand(previousItemInMainHand);
+            //changed
+            if (player.getScoreboardTags().contains("LadyNagan")) {
+                player.getInventory().setItemInMainHand(SniperGive.getItem(player));
+            }
         }
         //delay after pumpkin for shoot that u cannot shoot instantly
 
@@ -725,7 +730,7 @@ public class SniperListener extends SniperGive implements Listener {
         removePumpkinAndEffect(player);
 
         //giving back mainSniperRiffle
-        switchItemTo(player, SNIPER_RIFLE_NAME_ULTRA, SniperGive.getItem());
+        switchItemTo(player, SNIPER_RIFLE_NAME_ULTRA, SniperGive.getItem(player));
 
         isUlting = false;
     }
@@ -741,6 +746,7 @@ public class SniperListener extends SniperGive implements Listener {
      */
     private void ultShootSystem(PlayerInteractEvent event, Player player){
         if (!wearingPumpkin) {
+            player.getWorld().playSound(player.getLocation(),"ladynagan.ultaln",1.0f, 1.0f);
             switchActiveSlotTo(player, SNIPER_RIFLE_NAME);
             ItemStack pumpkinHelmet = new ItemStack(Material.CARVED_PUMPKIN);
             player.getInventory().setHelmet(pumpkinHelmet);
@@ -771,7 +777,7 @@ public class SniperListener extends SniperGive implements Listener {
                     }
 
                 }
-            }.runTaskLater(plugin, 60L);
+            }.runTaskLater(plugin, 40L);
         }
     }
 

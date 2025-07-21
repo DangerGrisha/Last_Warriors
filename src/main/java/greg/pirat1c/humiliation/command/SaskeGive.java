@@ -1,5 +1,10 @@
-package greg.pirat1c.humiliation.command.ladynagan;
+package greg.pirat1c.humiliation.command.saske;
 
+import greg.pirat1c.humiliation.command.AttractionGive;
+import greg.pirat1c.humiliation.command.ChidoryGive;
+import greg.pirat1c.humiliation.command.SaskeBodyReplacement;
+import greg.pirat1c.humiliation.command.SaskeSword;
+import greg.pirat1c.humiliation.command.SnowShuriken;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -10,12 +15,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class LadyNaganGive implements CommandExecutor {
+public class SaskeGive implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage("§cUsage: /giveladynagan <player>");
+            sender.sendMessage("§cUsage: /givesaske <player>");
             return true;
         }
 
@@ -26,21 +31,20 @@ public class LadyNaganGive implements CommandExecutor {
         }
 
         giveKitTo(target);
-        sender.sendMessage("§aLadyNagant kit given to " + target.getName());
+        sender.sendMessage("§aSaske kit given to " + target.getName());
         return true;
     }
 
     private void giveKitTo(Player player) {
-        player.getInventory().setItem(0, SniperGive.getItem(player));
-        player.getInventory().setItem(2, FlyGive.getItem());
+        // Основные способности Saske
+        player.getInventory().setItem(0, SaskeSword.getDirt());
+        player.getInventory().setItem(1, SnowShuriken.getShuriken());
         player.getInventory().setItem(4, createBannerSlot());
+        player.getInventory().setItem(6, ChidoryGive.getItem());
+        player.getInventory().setItem(7, SaskeBodyReplacement.getItem());
+        player.getInventory().setItem(8, AttractionGive.getItem());
 
-        ItemStack traps = TrapGive.getItem().clone();
-        traps.setAmount(3);
-        player.getInventory().setItem(6, traps);
 
-        player.getInventory().setItem(7, ExplosionGive.getItem());
-        player.getInventory().setItem(8, UltraGive.getItem());
 
         player.getInventory().addItem(new ItemStack(Material.GRAY_WOOL, 64));
         player.getInventory().addItem(new ItemStack(Material.SHEARS, 1));
@@ -57,7 +61,6 @@ public class LadyNaganGive implements CommandExecutor {
 
         player.sendMessage(Component.text("All items have been given!"));
     }
-
 
     private ItemStack createBannerSlot() {
         ItemStack item = new ItemStack(Material.RED_DYE, 1);

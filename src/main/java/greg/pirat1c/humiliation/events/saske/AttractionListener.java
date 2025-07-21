@@ -1,5 +1,7 @@
 package greg.pirat1c.humiliation.events.saske;
 
+import greg.pirat1c.humiliation.events.ladynagan.CooldownManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -22,16 +24,22 @@ import org.bukkit.util.Vector;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 
 public class AttractionListener implements Listener {
 
     private final JavaPlugin plugin;
+    private final CooldownManager cooldownManager;
 
-    public AttractionListener(JavaPlugin plugin) {
+
+    public AttractionListener(JavaPlugin plugin, CooldownManager cooldownManager) {
         this.plugin = plugin;
+        this.cooldownManager = cooldownManager;
     }
     private void spawnParticlesAroundBlock(Location location) {
         location.getWorld().spawnParticle(Particle.SMOKE_NORMAL, location, 50, 5, 5, 5);
@@ -60,10 +68,31 @@ public class AttractionListener implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getHand() == EquipmentSlot.HAND &&
                 player.getInventory().getItemInMainHand().getType() == Material.BEDROCK &&
                 player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Attraction")) {
+
+
+            // Запустить кулдаун (например 30 секунд, слот — текущий)
+            cooldownManager.startCooldown(player, "Attraction", player.getInventory().getHeldItemSlot(), 120, true);
+            int slot = player.getInventory().getHeldItemSlot();
+            ItemStack originalItem = player.getInventory().getItemInMainHand().clone();
+
+            // Вернуть предмет вручную после кулдауна
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (!player.isOnline()) return;
+
+                    // Только если стекло всё ещё там (не было заменено вручную)
+                    ItemStack current = player.getInventory().getItem(slot);
+                    if (current != null && current.getType().toString().contains("GLASS")) {
+                        player.getInventory().setItem(slot, originalItem);
+                    }
+                }
+            }.runTaskLater(plugin, 20L * 120); // 50 секунд
+
+            // продолжение логики
             Block blockToPlace = clickedBlock.getRelative(event.getBlockFace());
             if (blockToPlace.getType() == Material.AIR) {
                 spawnParticlesAroundBlock(blockToPlace.getLocation());
-                //blockToPlace.setType(Material.BEDROCK);
                 Location loc = blockToPlace.getLocation();
                 startBlockRemoval(blockToPlace);
                 replaceBlockWithArmorStand(loc);
@@ -71,6 +100,7 @@ public class AttractionListener implements Listener {
             }
         }
     }
+
 
     public void replaceBlockWithArmorStand(Location location) {
         ArmorStand armorStand = location.getWorld().spawn(location.add(0.5, 0, 0.5), ArmorStand.class);
@@ -86,7 +116,7 @@ public class AttractionListener implements Listener {
 
         ItemStack redDye = new ItemStack(Material.RED_DYE);
         ItemMeta dyeMeta = redDye.getItemMeta();
-        dyeMeta.setDisplayName("Attraction");
+        dyeMeta.displayName(Component.text("Attraction"));
         redDye.setItemMeta(dyeMeta);
         armorStand.getEquipment().setItemInMainHand(redDye);
     }
@@ -95,12 +125,12 @@ public class AttractionListener implements Listener {
         new BukkitRunnable() {
             int ticks = 0;
             ArmorStand armorStand = null;
-            Set<LivingEntity> damagedEntities = new HashSet<>();
+            Map<UUID, Integer> entitiesInZone = new HashMap<>();
 
             @Override
             public void run() {
                 ticks++;
-                if (ticks >= 40) {
+                if (ticks >= 300) { // 5 секунд = 100 тиков
                     if (armorStand != null && !armorStand.isDead()) {
                         armorStand.remove();
                     }
@@ -108,17 +138,26 @@ public class AttractionListener implements Listener {
                     return;
                 }
 
-                for (Entity entity : location.getWorld().getNearbyEntities(location, 7, 7, 7)) {
-                    if (!(entity instanceof ArmorStand) && !(entity instanceof Player && isAlly((Player) entity, placer))) {
+                for (Entity entity : location.getWorld().getNearbyEntities(location, 9, 9, 9)) {
+                    if (!(entity instanceof ArmorStand) &&
+                            !(entity instanceof Player && isAlly((Player) entity, placer)) &&
+                            entity instanceof LivingEntity living) {
+
                         Vector direction = location.toVector().subtract(entity.getLocation().toVector()).normalize();
                         entity.setVelocity(direction.multiply(0.5));
 
-                        if (entity.getLocation().distanceSquared(location) <= 10 && entity instanceof LivingEntity) {
-                            LivingEntity livingEntity = (LivingEntity) entity;
-                            if (!damagedEntities.contains(livingEntity)) {
-                                livingEntity.damage(5);
-                                damagedEntities.add(livingEntity);
+                        double distSq = entity.getLocation().distanceSquared(location);
+                        if (distSq <= 9) { // в радиусе 3 блоков
+                            UUID id = entity.getUniqueId();
+                            int timeInZone = entitiesInZone.getOrDefault(id, 0) + 1;
+                            entitiesInZone.put(id, timeInZone);
+
+                            if (timeInZone % 20 == 0) { // каждую секунду
+                                living.damage(4.0, placer);
                             }
+                        } else {
+                            // Вышел из зоны — сброс таймера
+                            entitiesInZone.remove(entity.getUniqueId());
                         }
                     }
                 }
@@ -131,8 +170,9 @@ public class AttractionListener implements Listener {
                     armorStand = getArmorStand(location);
                 }
             }
-        }.runTaskTimer(plugin, 20L, 2L);
+        }.runTaskTimer(plugin, 20L, 1L); // delay 1s, tick every 1L
     }
+
 
 
 
