@@ -17,10 +17,7 @@ import greg.pirat1c.humiliation.command.GiveArcherKitCommand;
 import greg.pirat1c.humiliation.command.GiveStarterKitCommand;
 import greg.pirat1c.humiliation.command.HomeCommand;
 import greg.pirat1c.humiliation.command.HumiliationCommand;
-import greg.pirat1c.humiliation.command.Ishigava.AuraGive;
-import greg.pirat1c.humiliation.command.Ishigava.LastWaterWallGive;
-import greg.pirat1c.humiliation.command.Ishigava.WaterBridgesGive;
-import greg.pirat1c.humiliation.command.Ishigava.WaterShieldGive;
+import greg.pirat1c.humiliation.command.Ishigava.*;
 import greg.pirat1c.humiliation.command.KitSlaveCommand;
 import greg.pirat1c.humiliation.command.SaskeBodyReplacement;
 import greg.pirat1c.humiliation.command.SaskeSword;
@@ -40,6 +37,7 @@ import greg.pirat1c.humiliation.events.fukuko.BombZoneListener;
 import greg.pirat1c.humiliation.events.fukuko.MortiraListener;
 import greg.pirat1c.humiliation.events.fukuko.PistolListener;
 import greg.pirat1c.humiliation.events.ishigava.*;
+import greg.pirat1c.humiliation.events.ishigava.KunaiBowShootListener;
 import greg.pirat1c.humiliation.events.ladynagan.*;
 
 import greg.pirat1c.humiliation.events.saske.AttractionListener;
@@ -49,8 +47,7 @@ import greg.pirat1c.humiliation.events.saske.ResistanceAfterKillListener;
 import greg.pirat1c.humiliation.events.saske.ShurikenListener;
 import greg.pirat1c.humiliation.events.saske.SpeedAfterKillListener;
 import greg.pirat1c.humiliation.events.saske.SwordSaskeListener;
-import greg.pirat1c.humiliation.events.saske.ThrowListener;
-import org.bukkit.Bukkit;
+import greg.pirat1c.humiliation.events.saske.ThrowListener;import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -97,6 +94,7 @@ public final class HumiliationPlugin extends JavaPlugin {
         getCommand("waterShieldGive").setExecutor(new WaterShieldGive());
         getCommand("waterBridgesGive").setExecutor(new WaterBridgesGive());
         getCommand("lastBridgesGive").setExecutor(new LastWaterWallGive());
+        getCommand("kunaiGive").setExecutor(new KunaiGive());
         getCommand("auraGive").setExecutor(new AuraGive());
         getCommand("pistolGive").setExecutor(new PistolGive());
         getCommand("bombZoneGive").setExecutor(new BombZoneGive());
@@ -131,6 +129,7 @@ public final class HumiliationPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new LastWaterWallListener(this),this);
         Bukkit.getPluginManager().registerEvents(new AuraListener(this),this);
         //Bukkit.getPluginManager().registerEvents(new ClonesListener(this),this);
+        Bukkit.getPluginManager().registerEvents(new KunaiBowShootListener(this),this);
 
         Bukkit.getPluginManager().registerEvents(new PistolListener(this),this);
         Bukkit.getPluginManager().registerEvents(new BombZoneListener(this),this);
