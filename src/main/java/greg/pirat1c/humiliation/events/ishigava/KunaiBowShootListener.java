@@ -3,6 +3,9 @@ package greg.pirat1c.humiliation.events.ishigava;
 import greg.pirat1c.humiliation.command.Ishigava.KunaiGive;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -13,6 +16,8 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -38,8 +43,6 @@ public class KunaiBowShootListener implements Listener {
     private final Map<UUID, Player> hookedPlayerMap = new HashMap<>();
 
 
-
-
     private final JavaPlugin plugin;
     private static final double FORCE_MULTIPLIER = 2.1;
 
@@ -52,24 +55,33 @@ public class KunaiBowShootListener implements Listener {
     public void onKunaiBowShoot(EntityShootBowEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
+        double power = player.getExp();
+        if (power < 0.1) return;
+
         ItemStack bow = event.getBow();
-        if (!isKunaiBow(bow)) return;
+        if (!isKunaiBow(bow)) {
+            return;
+        }
 
         event.setCancelled(true);
+        if (event.getProjectile() != null) {
+            event.getProjectile().remove(); // удалим стрелу, которую мог заспавнить Minecraft
+        }
+        UUID uuid = player.getUniqueId();
+        if (activeArrowMap.containsKey(player.getUniqueId())) {
+            return; // уже активный выстрел
+        }
+        if (activeStandMap.containsKey(uuid)) {
+            return;
+        }
+
 
         int slot = player.getInventory().getHeldItemSlot();
-        ItemStack dye = new ItemStack(Material.RED_DYE);
-        ItemMeta meta = dye.getItemMeta();
-        if (meta != null) {
-            meta.displayName(Component.text("Tether"));
-            dye.setItemMeta(meta);
-        }
-        player.getInventory().setItem(slot, dye);
+        ItemStack tether = createTetherItemWithSwordAttributes(Material.RED_DYE);
+        player.getInventory().setItem(slot, tether);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.0f);
 
-        double power = player.getExp();
-        if (power < 0.1) return;
 
         Location start = player.getEyeLocation().add(player.getLocation().getDirection().normalize().multiply(1.0));
         Vector velocity = player.getLocation().getDirection().normalize().multiply(power * FORCE_MULTIPLIER);
@@ -78,26 +90,31 @@ public class KunaiBowShootListener implements Listener {
         arrow.setShooter(player);
 
         arrow.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
+        activeArrowMap.put(uuid, arrow);
+
 
         ArmorStand stand = player.getWorld().spawn(start, ArmorStand.class);
 
         String tag = "uuid:" + player.getUniqueId();
         arrow.addScoreboardTag("kunai_arrow"); // добавить общий тег
         arrow.addScoreboardTag(tag);
-        stand.addScoreboardTag(tag);
+        stand.addScoreboardTag(tag); // 👈 Добавляем тег к стенду!
+
 
         //remember active slot
-        UUID uuid = player.getUniqueId();
+        activeStandMap.put(uuid, stand);
 
         originalSlotMap.put(uuid, slot);
         //armorstand create attributes
         stand.setVisible(false);
-        stand.setMarker(true);
+        stand.setMarker(false);
         stand.setGravity(false);
         stand.setInvulnerable(true);
         stand.setSmall(true);
         stand.setSilent(true);
         stand.setCollidable(false);
+
+        final Location origin = start.clone(); // ← начальная точка
 
         BukkitTask task = new BukkitRunnable() {
             boolean stuck = false;
@@ -105,15 +122,30 @@ public class KunaiBowShootListener implements Listener {
             @Override
             public void run() {
                 if (!arrow.isValid()) {
-                    stand.remove();
-                    cancel();
+                    cleanup();
+                    return;
+                }
+
+                // ✅ Прерывание, если расстояние > 15 блоков
+                if (arrow.isOnGround()) {
+                    if (arrow.getLocation().distance(player.getLocation()) > 15) {
+                        cleanup();
+                        return;
+                    }
+
+                    if (!stuck) {
+                        stuck = true;
+                        tetherTargets.put(uuid, stand.getLocation().clone());
+                    }
+                    Location loc = arrow.getLocation().clone().add(0, 0.2, 0);
+                    stand.teleport(loc);
                     return;
                 }
 
                 if (arrow.isOnGround()) {
                     if (!stuck) {
                         stuck = true;
-                        tetherTargets.put(uuid, arrow.getLocation().clone());
+                        tetherTargets.put(uuid, stand.getLocation().clone());
                     }
                     Location loc = arrow.getLocation().clone().add(0, 0.2, 0);
                     stand.teleport(loc);
@@ -123,6 +155,26 @@ public class KunaiBowShootListener implements Listener {
                 Vector dir = arrow.getVelocity().normalize();
                 Location followLoc = arrow.getLocation().subtract(dir.multiply(0.5)).add(0, 0.1, 0);
                 stand.teleport(followLoc);
+            }
+
+            private void cleanup() {
+                arrow.remove();
+                stand.remove();
+
+                // Вернуть предмет Kunai в оригинальный слот
+                int slot = originalSlotMap.getOrDefault(uuid, -1);
+                if (slot >= 0) {
+                    player.getInventory().setItem(slot, KunaiGive.getItem());
+                }
+
+                activeArrowMap.remove(uuid);
+                activeStandMap.remove(uuid);
+                originalSlotMap.remove(uuid);
+                tetherTargets.remove(uuid);
+                clickCounter.remove(uuid);
+                attachedPlayers.remove(uuid);
+                hookedPlayerMap.remove(uuid);
+                cancel();
             }
         }.runTaskTimer(plugin, 0L, 1L);
 
@@ -203,6 +255,8 @@ public class KunaiBowShootListener implements Listener {
         int originalSlot = originalSlotMap.get(uuid);
         int newSlot = event.getNewSlot();
 
+        updateOffhandKunai(player);
+
         if (newSlot != originalSlot) {
             // Вернуть Kunai в оригинальный слот
             player.getInventory().setItem(originalSlot, KunaiGive.getItem());
@@ -214,14 +268,23 @@ public class KunaiBowShootListener implements Listener {
                 if (!(entity instanceof Arrow || entity instanceof ArmorStand)) continue;
                 if (entity.getScoreboardTags().contains(tag)) {
                     entity.remove();
-                    System.out.println("[DEBUG] removed entity with scoreboard tag: " + tag);
                 }
             }
+
+            Arrow arrow = activeArrowMap.remove(uuid);
+            if (arrow != null && arrow.isValid()) arrow.remove();
 
             // Очистить все связанные мапы
             originalSlotMap.remove(uuid);
             tetherTargets.remove(uuid);
             clickCounter.remove(uuid);
+
+
+            //shooter.getInventory().setItem(slot, KunaiGive.getItem());
+
+            attachedPlayers.remove(uuid);
+            hookedPlayerMap.remove(uuid);
+            activeStandMap.remove(uuid); // ❗ если больше не нужен
         }
     }
 
@@ -234,65 +297,138 @@ public class KunaiBowShootListener implements Listener {
         UUID shooterUUID = shooter.getUniqueId();
         String tag = "uuid:" + shooterUUID;
 
-        // ✅ Проверка: только kunai-стрела от этого игрока
         if (!arrow.getScoreboardTags().contains("kunai_arrow")) return;
         if (!arrow.getScoreboardTags().contains(tag)) return;
+
+        // ❗ Удаляем фантомные stuck стрелы у цели
+        for (Entity e : target.getWorld().getNearbyEntities(target.getLocation(), 1, 2, 1)) {
+            if (e instanceof Arrow otherArrow && e != arrow) {
+                if (otherArrow.getScoreboardTags().contains("kunai_arrow")) {
+                    otherArrow.remove();
+                }
+            }
+        }
 
         // ✅ Привязать игроков
         hookedPlayerMap.put(shooterUUID, target);
         attachedPlayers.put(shooterUUID, target.getUniqueId());
+        tetherTargets.put(shooterUUID, target.getLocation().clone().add(0, 0.2, 0));
+
+        // ✅ Следим за здоровьем
+        double[] initialHealth = {target.getHealth()};
+        double[] thresholdHealth = {Math.max(initialHealth[0] - 10.0, 0)};
+
 
         // ✅ Установить зелёный краситель
         int slot = originalSlotMap.getOrDefault(shooterUUID, shooter.getInventory().getHeldItemSlot());
         shooter.getInventory().setItem(slot, createDye(Material.LIME_DYE));
 
         // ✅ Арморстенд
-        ArmorStand stand = findStandByShooter(shooter.getWorld(), shooterUUID);
+        ArmorStand stand = activeStandMap.get(shooterUUID);
+        System.out.println(stand + "  stand");
         if (stand == null) return;
 
+        // Завершаем предыдущий таск по стрелке
         BukkitTask oldTask = activeTasks.get(shooterUUID);
-        if (oldTask != null) oldTask.cancel();
+        if (oldTask != null) {
+            oldTask.cancel();
+            activeTasks.remove(shooterUUID);
+        }
+
+        // Удалим стрелу и уберём из map
+        Arrow oldArrow = activeArrowMap.remove(shooterUUID);
+        if (oldArrow != null && oldArrow.isValid()) {
+            oldArrow.remove();
+        }
+
 
         // ✅ Новый таск слежения
         BukkitTask newTask = new BukkitRunnable() {
+            int airTicks = 0;
+
             @Override
             public void run() {
                 if (!target.isOnline() || target.getGameMode() == GameMode.SPECTATOR ||
-                        !shooter.isOnline() || shooter.getGameMode() == GameMode.SPECTATOR) {
-
-                    stand.remove();
-                    // Вернуть Kunai в оригинальный слот
-                    int slot = originalSlotMap.getOrDefault(shooterUUID, shooter.getInventory().getHeldItemSlot());
+                        !shooter.isOnline()) {
+                    cleanupAndCancel();
                     shooter.getInventory().setItem(slot, KunaiGive.getItem());
-                    originalSlotMap.remove(shooterUUID);
-                    tetherTargets.remove(shooterUUID);
-                    clickCounter.remove(shooterUUID);
-                    attachedPlayers.remove(shooterUUID);
-                    hookedPlayerMap.remove(shooterUUID);
-
-                    stand.remove();
-                    cancel();
                     return;
+                }
+                // ❗ Здоровье
+                double currentHealth = target.getHealth();
+                if (currentHealth > initialHealth[0]) {
+                    initialHealth[0] = currentHealth;
+                    thresholdHealth[0] = Math.min(currentHealth - 10.0, 20.0);
+                }
 
+                if (currentHealth <= thresholdHealth[0]) {
+                    shooter.sendMessage(Component.text("Target broke the tether by losing too much health."));
+                    shooter.getInventory().setItem(slot, KunaiGive.getItem());
+                    cleanupAndCancel();
+                    return;
+                }
+
+                // ✅ Проверка расстояния между shooter и target
+                if (shooter.getLocation().distance(target.getLocation()) > 15) {
+                    cleanupAndCancel();
+                    shooter.getInventory().setItem(slot, KunaiGive.getItem());
+                    return;
+                }
+
+                // ✅ Проверка полёта цели
+                if (!target.isOnGround()) {
+                    airTicks++;
+                    if (airTicks >= 60) {
+                        cleanupAndCancel();
+                        shooter.getInventory().setItem(slot, KunaiGive.getItem());
+                        return;
+                    }
+                } else {
+                    airTicks = 0;
+                }
+
+                // ✅ Проверка смены слота — если игрок больше не держит предмет в слоте, прервать
+                int currentSlot = shooter.getInventory().getHeldItemSlot();
+                int expectedSlot = originalSlotMap.getOrDefault(shooterUUID, -1);
+                if (currentSlot != expectedSlot) {
+                    cleanupAndCancel();
+                    shooter.getInventory().setItem(slot, KunaiGive.getItem());
+                    return;
                 }
 
                 // Арморстенд следует за целью
                 Location follow = target.getLocation().clone().add(0, 0.2, 0);
+                tetherTargets.put(shooterUUID, follow.clone());
+
                 stand.teleport(follow);
 
-                // ✅ Проверка полёта
-                boolean shooterInAir = shooter.getLocation().subtract(0, 0.1, 0).getBlock().getType().isAir();
-                Material dyeMaterial = shooterInAir ? Material.RED_DYE : Material.LIME_DYE;
-
-                ItemStack current = shooter.getInventory().getItem(slot);
+                // ✅ Проверка шифта
+                Material dyeMaterial = shooter.isSneaking() ? Material.LIME_DYE : Material.RED_DYE;
+                ItemStack current = shooter.getInventory().getItem(expectedSlot);
                 if (current == null || current.getType() != dyeMaterial || !current.hasItemMeta()) {
-                    shooter.getInventory().setItem(slot, createDye(dyeMaterial));
+                    shooter.getInventory().setItem(expectedSlot, createTetherItemWithSwordAttributes(dyeMaterial));
                 }
+            }
+
+            private void cleanupAndCancel() {
+                stand.remove();
+                int slot = originalSlotMap.getOrDefault(shooterUUID, shooter.getInventory().getHeldItemSlot());
+
+                originalSlotMap.remove(shooterUUID);
+                tetherTargets.remove(shooterUUID);
+                clickCounter.remove(shooterUUID);
+                attachedPlayers.remove(shooterUUID);
+                hookedPlayerMap.remove(shooterUUID);
+                activeStandMap.remove(shooterUUID);
+                target.damage(4.0);
+                cancel();
             }
         }.runTaskTimer(plugin, 0L, 1L);
 
+
         activeTasks.put(shooterUUID, newTask);
     }
+
     private ArmorStand findStandByShooter(World world, UUID shooterUUID) {
         String tag = "uuid:" + shooterUUID;
 
@@ -315,4 +451,72 @@ public class KunaiBowShootListener implements Listener {
         return dye;
     }
 
+    private void updateOffhandKunai(Player player) {
+        ItemStack main = player.getInventory().getItemInMainHand();
+        ItemStack off = player.getInventory().getItemInOffHand();
+
+        if (isKunaiBow(main)) {
+            // Если во второй руке ничего нет — выдать деревянный меч "Kunai"
+            if (off.getType() == Material.AIR) {
+                ItemStack sword = new ItemStack(Material.WOODEN_SWORD);
+                ItemMeta meta = sword.getItemMeta();
+                if (meta != null) {
+                    meta.displayName(Component.text("Kunai"));
+                    sword.setItemMeta(meta);
+                }
+                player.getInventory().setItemInOffHand(sword);
+            }
+        } else {
+            // Если во второй руке Kunai-меч, а из главной убрали лук — удалить меч
+            if (off.getType() == Material.WOODEN_SWORD) {
+                ItemMeta meta = off.getItemMeta();
+                if (meta != null && Component.text("Kunai").equals(meta.displayName())) {
+                    player.getInventory().setItemInOffHand(null);
+                }
+            }
+        }
+    }
+
+
+    @EventHandler
+    public void onItemSwitch(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        // Ждём 1 тик, чтобы предмет уже обновился
+        Bukkit.getScheduler().runTaskLater(plugin, () -> updateOffhandKunai(player), 1L);
+    }
+
+
+    public ItemStack createTetherItemWithSwordAttributes(Material dyeColor) {
+        ItemStack dye = new ItemStack(dyeColor);
+        ItemMeta meta = dye.getItemMeta();
+
+        if (meta != null) {
+            meta.displayName(Component.text("Tether"));
+
+            // +5 attack damage
+            AttributeModifier damageModifier = new AttributeModifier(
+                    UUID.randomUUID(),
+                    "generic.attack_damage",
+                    5.0,
+                    AttributeModifier.Operation.ADD_NUMBER
+            );
+            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, damageModifier);
+
+            // -2.4 attack speed
+            AttributeModifier speedModifier = new AttributeModifier(
+                    UUID.randomUUID(),
+                    "generic.attack_speed",
+                    -2.4,
+                    AttributeModifier.Operation.ADD_NUMBER
+            );
+            meta.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, speedModifier);
+
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES); // чтобы скрыть цифры в описании, если нужно
+
+            dye.setItemMeta(meta);
+        }
+
+        return dye;
+    }
 }
+
