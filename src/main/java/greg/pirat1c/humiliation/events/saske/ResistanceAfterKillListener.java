@@ -1,5 +1,6 @@
 package greg.pirat1c.humiliation.events.saske;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -44,7 +45,7 @@ public class ResistanceAfterKillListener implements Listener {
             // Set unbreakable named chestplate on killer's head
             ItemStack chestplate = new ItemStack(Material.DIAMOND_CHESTPLATE);
             ItemMeta chestplateMeta = chestplate.getItemMeta();
-            chestplateMeta.setDisplayName("shieldsasuke");
+            chestplateMeta.displayName(Component.text("shieldsasuke"));
             chestplateMeta.setUnbreakable(true);
             chestplate.setItemMeta(chestplateMeta);
             chestplate.addEnchantment(Enchantment.BINDING_CURSE, 1);

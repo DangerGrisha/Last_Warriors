@@ -1,5 +1,6 @@
 package greg.pirat1c.humiliation.command;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,6 +11,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static greg.pirat1c.humiliation.events.saske.SaskeConstants.NAME_OF_CHIDORY;
 
 
 public class  ChidoryGive implements CommandExecutor {
@@ -33,12 +36,12 @@ public class  ChidoryGive implements CommandExecutor {
         return true;
     }
 
-    private ItemStack getItem() {
+    public static ItemStack getItem() {
 
         ItemStack sword = new ItemStack(material, 1);
         ItemMeta meta = sword.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("Chidory");
+            meta.displayName(Component.text(NAME_OF_CHIDORY));
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();

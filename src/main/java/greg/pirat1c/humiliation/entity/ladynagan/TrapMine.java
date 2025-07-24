@@ -1,6 +1,7 @@
 package greg.pirat1c.humiliation.entity.ladynagan;
 
 import greg.pirat1c.humiliation.entity.CustomEntity;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -32,7 +33,7 @@ public class TrapMine extends CustomEntity {
         ItemStack mineAsStack = new ItemStack(material, amount);
         ItemMeta meta = mineAsStack.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(displayName);
+            meta.displayName(Component.text(displayName));
             meta.setUnbreakable(unbreakable);
             meta.setLore(Arrays.asList(lore));
             mineAsStack.setItemMeta(meta);

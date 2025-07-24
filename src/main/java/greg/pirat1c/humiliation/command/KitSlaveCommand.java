@@ -1,6 +1,7 @@
 package greg.pirat1c.humiliation.command;
 
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -46,7 +47,7 @@ public class KitSlaveCommand implements CommandExecutor {
         ItemStack item = new ItemStack(Material.DIRT, 64);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("SLAVE_DIRT");
+            meta.displayName(Component.text("SLAVE_DIRT"));
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();

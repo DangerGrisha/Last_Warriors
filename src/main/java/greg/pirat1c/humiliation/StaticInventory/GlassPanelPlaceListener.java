@@ -1,4 +1,4 @@
-package greg.pirat1c.humiliation.events.ladynagan;
+package greg.pirat1c.humiliation.StaticInventory;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;

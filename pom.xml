@@ -5,48 +5,77 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>Gregory.P1rat1C</groupId>
-    <artifactId>HumilationMasterPlugin</artifactId>
+    <artifactId>LastWarriors</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>HumiliationPlugin</name>
+    <name>LastWarriors</name>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- please do not use this property below unless strictly necessary,
              read README.md for the detailed instructions on setting up the deployment dir
-
            <minecraft.local.dir>D:/blabla/blala</minecraft.local.dir> -->
     </properties>
 
     <build>
         <plugins>
+            <!-- Компилятор -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${maven.compiler.release}</release>
+                    <source>21</source>
+                    <target>21</target>
+                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
+
+            <!-- Shade для fat-jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>shade</id>
+                        <phase>verify</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/DEPENDENCIES*</exclude>
+                                        <exclude>META-INF/versions/9/module-info</exclude>
+                                        <exclude>META-INF/native-image/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.comphenix.protocol</pattern>
+                                    <shadedPattern>greg.pirat1c.protocollib.shaded</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Копирование в plugins/ -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -72,6 +101,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Считывание dev.properties -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
@@ -91,6 +122,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Проверка что путь до папки сервера указан -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -106,9 +139,9 @@
                             <rules>
                                 <requireProperty>
                                     <property>minecraft.local.dir</property>
-                                    <message>You must set a "minecraft.local.dir" property. Read the README.md file for instructions. The parameter should point to the minecraft server dir</message>
+                                    <message>You must set a "minecraft.local.dir" property. Read the README.md file for instructions.</message>
                                     <regex>.+(?&lt;!plugins)$</regex>
-                                    <regexMessage>Please define the actual server dir without "/plugins" dir. E.G. "C:/ProgramFiles/minecraft-server"</regexMessage>
+                                    <regexMessage>Should be path without trailing /plugins</regexMessage>
                                 </requireProperty>
                             </rules>
                             <fail>true</fail>
@@ -117,6 +150,7 @@
                 </executions>
             </plugin>
         </plugins>
+
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -127,20 +161,24 @@
 
     <repositories>
         <repository>
-            <id>spigotmc-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>papermc-repo</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>enginehub</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.19.2-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

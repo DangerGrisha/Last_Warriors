@@ -2,6 +2,7 @@ name: TrainingFirstPlugin
 version: '${project.version}'
 main: greg.pirat1c.humiliation.HumiliationPlugin
 api-version: 1.19
+softdepend: [ ProtocolLib ]
 authors: [ P1rat1C ]
 
 commands:
@@ -49,4 +50,36 @@ commands:
     description: lady nagan's trap
   ultraGiveLady:
     description: ulta lady nagan give
+  waterShieldGive:
+    description: quick wall for Ishigava
+  waterBridgesGive:
+    description: bridges for Ishigava
+  lastBridgesGive:
+    description: last WALL for Ishigava
+  kunaiGive:
+    description: kunai for Ishigava
+  auraGive:
+    description: aura ult for Ishigava
+  pistolGive:
+    description: fukuko's pistol gun
+  bombZoneGive:
+    description: fukuko's ult
+  mortiraGive:
+    description: fukuko's mortira
+  setclass:
+    usage: /setclass <LadyNagan|Saske|Sniper> [player]
+    description: Set player class tag
+  giveladynagan:
+    usage: /giveladynagan <player>
+    description: Gives all LadyNagan items in correct slots
+  givestarterkit:
+    usage: /givestarterkit <player>
+    description: Gives diamond armor and gear
+  givearcherkit:
+    usage: /givearcherkit <player>
+    description: Gives archer kit
+  givesaske:
+    usage: /givesaske <player>
+    description: Gives the Saske item kit
+
 

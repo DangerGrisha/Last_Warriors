@@ -1,6 +1,7 @@
 package greg.pirat1c.humiliation.command.ladynagan;
 
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -38,7 +39,7 @@ public class UltraGive implements CommandExecutor {
         ItemStack item = new ItemStack(material, 1);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(NAME_OF_ULTRA_BUTTON);
+            meta.displayName(Component.text(NAME_OF_ULTRA_BUTTON));
             meta.setUnbreakable(true);
 
             List<String> lore = new ArrayList<>();

@@ -1,5 +1,6 @@
 package greg.pirat1c.humiliation.events.saske;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -10,11 +11,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.bukkit.util.RayTraceResult;
 
 
+
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.UUID;
 
 import static greg.pirat1c.humiliation.events.saske.SaskeConstants.KATANA_MATERIAL;
 import static greg.pirat1c.humiliation.events.saske.SaskeConstants.KATANA_NAME;
@@ -22,6 +27,7 @@ import static greg.pirat1c.humiliation.events.saske.SaskeConstants.KATANA_NAME;
 public class SwordSaskeListener implements Listener {
 
     private JavaPlugin plugin;
+    private final HashMap<UUID, Long> cooldownMap = new HashMap<UUID, Long>();
 
     public SwordSaskeListener(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -30,10 +36,53 @@ public class SwordSaskeListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+
         if (isSwordEvent(event, player)) {
+            UUID uuid = player.getUniqueId();
+            long currentTime = System.currentTimeMillis();
+
+            // Проверка на кд
+            if (cooldownMap.containsKey(uuid)) {
+                long lastUsed = cooldownMap.get(uuid);
+                long timePassed = currentTime - lastUsed;
+                long cooldown = 6000; // 6 секунд
+
+                if (timePassed < cooldown) {
+                    return;
+                }
+            }
+
+            // Запуск способности
+            cooldownMap.put(uuid, currentTime);
             executeSwordAbility(player);
+            startCooldownTimer(player, 6);
         }
     }
+    private void startCooldownTimer(Player player, int seconds) {
+        new BukkitRunnable() {
+            int timeLeft = seconds;
+
+            @Override
+            public void run() {
+                if (!player.isOnline()) {
+                    cancel();
+                    return;
+                }
+
+                if (timeLeft <= 0) {
+                    player.sendActionBar(Component.text("Ready"));
+                    cancel();
+                    return;
+                }
+
+                player.sendActionBar(Component.text(timeLeft + " sec"));
+                timeLeft--;
+            }
+        }.runTaskTimer(plugin, 0, 20); // 1 раз в секунду
+    }
+
+
+
 
     private void executeSwordAbility(Player player) {
 
@@ -56,7 +105,7 @@ public class SwordSaskeListener implements Listener {
     }
 
     private void pushPlayerBack(Player player) {
-        Vector direction = player.getLocation().getDirection().multiply(-0.5);
+        Vector direction = player.getLocation().getDirection().multiply(-0.8);
         player.setVelocity(player.getVelocity().add(direction));
     }
 

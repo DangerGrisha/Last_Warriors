@@ -3,6 +3,7 @@ package greg.pirat1c.humiliation.events.ladynagan;
 import greg.pirat1c.humiliation.command.ladynagan.TrapGive;
 import greg.pirat1c.humiliation.command.ladynagan.UltraGive;
 import greg.pirat1c.humiliation.entity.ladynagan.TrapMine;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -38,12 +39,11 @@ public class TrapsListener implements Listener {
 
     private final Map<String, Long> bombCooldowns = new HashMap<>();
     private final Map<Player, Integer> activeBombCounts = new HashMap<>();
-    private final String TAG_NAME = LadyConstants.LADY_TAG;
+    //private final String TAG_NAME = LadyConstants.LADY_TAG;
     private final Map<ArmorStand, BukkitRunnable> armorStandTimers = new HashMap<>();
     private final Map<Player, List<Long>> mineCooldowns = new HashMap<>();
-    private final int MAX_MINES = 3; // Maximum number of mines a player can place
-    private final int COOLDOWN_SECONDS = 15; // Cooldown for each mine in seconds/
-    private final int TIMER_SECONDS = 20; // 3 minutes timer
+    //private final int MAX_MINES = 3; // Maximum number of mines a player can place
+    private final int TIMER_SECONDS = 240; // 4 minutes timer
     private final Map<ArmorStand, Player> armorStandOwners = new HashMap<>();
 
     //private volatile Boolean isInteracted = false;
@@ -349,6 +349,7 @@ public class TrapsListener implements Listener {
         armorStand.setCanPickupItems(false);
         //armorStand.setInvulnerable(false);
         armorStand.setBasePlate(false);
+        armorStand.setInvulnerable(true);
         //if we add true in marker , armorstand will be Invulnerable
         //armorStand.setMarker(false);
         armorStand.setCustomName(TRAP_NAME);
@@ -358,7 +359,7 @@ public class TrapsListener implements Listener {
 
         ItemStack redDye = new ItemStack(Material.BLUE_DYE);
         ItemMeta dyeMeta = redDye.getItemMeta();
-        dyeMeta.setDisplayName("TrapLedy");
+        dyeMeta.displayName(Component.text("TrapLedy"));
         redDye.setItemMeta(dyeMeta);
         armorStand.getEquipment().setItemInMainHand(redDye);
 
@@ -394,7 +395,7 @@ public class TrapsListener implements Listener {
             @Override
             public void run() {
                 if (block.getType() == SET_UP_BLOCK) {
-                    block.setType(Material.AIR);
+                        block.setType(Material.AIR);
                 }
             }
         }.runTaskLater(plugin, 0L);
@@ -453,7 +454,7 @@ public class TrapsListener implements Listener {
         ItemStack grayPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta meta = grayPane.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ChatColor.GRAY + "Mine Cooldown");
+            meta.displayName(Component.text(ChatColor.GRAY + "Mine Cooldown"));
             grayPane.setItemMeta(meta);
         }
         return grayPane;

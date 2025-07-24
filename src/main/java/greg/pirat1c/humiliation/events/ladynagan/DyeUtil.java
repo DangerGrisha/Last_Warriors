@@ -1,5 +1,6 @@
 package greg.pirat1c.humiliation.events.ladynagan;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -10,7 +11,7 @@ public class DyeUtil {
         ItemStack dye = new ItemStack(dyeMaterial);
         ItemMeta meta = dye.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(displayName);
+            meta.displayName(Component.text(displayName));
             dye.setItemMeta(meta);
         }
         return dye;

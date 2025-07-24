@@ -1,6 +1,7 @@
 package greg.pirat1c.humiliation.command;
 
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -34,12 +35,12 @@ public class SaskeSword implements CommandExecutor {
         return true;
     }
 
-    private ItemStack getDirt() {
+    public static ItemStack getDirt() {
 
         ItemStack sword = new ItemStack(material, 1);
         ItemMeta meta = sword.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(KATANA_NAME);
+            meta.displayName(Component.text(KATANA_NAME));
             meta.setUnbreakable(true);
             List<String> lore = new ArrayList<>();
 
